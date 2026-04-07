@@ -215,4 +215,32 @@ class PageTransitions {
   }) {
     return NoTransitionPage(key: state.pageKey, child: child);
   }
+
+  /// Setelah splash “portal”: fade + scale halus ke 1.0 (rasa buka halaman).
+  static Page<dynamic> portalFadeIn({
+    required GoRouterState state,
+    required Widget child,
+    Duration duration = const Duration(milliseconds: 620),
+  }) {
+    return CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: duration,
+      reverseTransitionDuration: duration,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 }

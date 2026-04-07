@@ -37,8 +37,9 @@ class AppRouter {
               return null; // Allow access to onboarding
             }
 
-            // If user is logged in and trying to access login/splash, redirect to dashboard
-            if (isLoggedIn && (isLogin || isSplash)) {
+            // Logged-in user di login → dashboard. Splash tidak di-redirect di sini
+            // agar animasi penutup splash (portal) bisa selesai; splash memanggil go().
+            if (isLoggedIn && isLogin) {
               return AppRoutes.dashboard;
             }
 
@@ -77,39 +78,31 @@ class AppRouter {
           ),
         ),
 
-        // Onboarding Screen - Fade and slide transition
         GoRoute(
           path: AppRoutes.onboarding,
           name: AppRoutes.onboardingName,
-          pageBuilder: (context, state) => PageTransitions.fadeSlide(
-            context: context,
+          pageBuilder: (context, state) => PageTransitions.portalFadeIn(
             state: state,
             child: const AnimatedOnboardingScreen(),
-            duration: const Duration(milliseconds: 500),
           ),
         ),
 
-        // Auth Routes - Slide from right
+        // Auth — transisi halus setelah animasi portal di splash
         GoRoute(
           path: AppRoutes.login,
           name: AppRoutes.loginName,
-          pageBuilder: (context, state) => PageTransitions.slide(
-            context: context,
+          pageBuilder: (context, state) => PageTransitions.portalFadeIn(
             state: state,
             child: const LoginScreen(),
-            duration: const Duration(milliseconds: 400),
           ),
         ),
 
-        // Main Dashboard - Fade and scale transition
         GoRoute(
           path: AppRoutes.dashboard,
           name: AppRoutes.dashboardName,
-          pageBuilder: (context, state) => PageTransitions.fadeScale(
-            context: context,
+          pageBuilder: (context, state) => PageTransitions.portalFadeIn(
             state: state,
             child: const MainDashboardScreen(),
-            duration: const Duration(milliseconds: 400),
           ),
         ),
       ],

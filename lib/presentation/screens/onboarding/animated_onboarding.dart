@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+
 import '../../../l10n/app_localizations.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
@@ -19,6 +20,8 @@ class AnimatedOnboardingScreen extends ConsumerStatefulWidget {
 
 class _AnimatedOnboardingScreenState
     extends ConsumerState<AnimatedOnboardingScreen> {
+  static const _topBgAsset = 'assets/images/bg-login.jpg';
+
   final PageController pageController = PageController();
   int currentIndex = 0;
 
@@ -27,20 +30,17 @@ class _AnimatedOnboardingScreenState
       OnBoardingModel(
         title: l10n.welcomeToHRIS,
         subtitle: l10n.welcomeDescription,
-        lottieAssetPath:
-            'assets/images/onboarding/slide1-j.json', // Lottie animation
+        lottieAssetPath: 'assets/images/onboarding/slide1-j.json',
       ),
       OnBoardingModel(
         title: l10n.trackAttendanceTitle,
         subtitle: l10n.trackAttendanceDescription,
-        lottieAssetPath:
-            'assets/images/onboarding/slide2-j.json', // Lottie animation
+        lottieAssetPath: 'assets/images/onboarding/slide2-j.json',
       ),
       OnBoardingModel(
         title: l10n.manageLeavesTitle,
         subtitle: l10n.manageLeavesDescription,
-        lottieAssetPath:
-            'assets/images/onboarding/slide3-j-2.json', // Lottie animation
+        lottieAssetPath: 'assets/images/onboarding/slide3-j-2.json',
       ),
     ];
   }
@@ -59,8 +59,6 @@ class _AnimatedOnboardingScreenState
     final l10n = AppLocalizations.of(context)!;
     final items = _getOnboardingItems(l10n);
 
-    // Slide terakhir: navigasi tidak butuh PageController — jangan return di bawah
-    // `!hasClients` atau tombol selesai terasa “tidak merespons”.
     if (currentIndex >= items.length - 1) {
       _navigateToLogin();
       return;
@@ -70,7 +68,7 @@ class _AnimatedOnboardingScreenState
 
     pageController.nextPage(
       duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOutCubicEmphasized, // Smooth curve
+      curve: Curves.easeInOutCubicEmphasized,
     );
   }
 
@@ -78,7 +76,6 @@ class _AnimatedOnboardingScreenState
     return AnimatedBuilder(
       animation: pageController,
       builder: (context, child) {
-        // Saat frame pertama `page` sering null → tanpa fallback opacity teks jadi 0.
         final double pageFloat = pageController.hasClients &&
                 pageController.position.haveDimensions
             ? (pageController.page ?? currentIndex.toDouble())
@@ -86,7 +83,6 @@ class _AnimatedOnboardingScreenState
         double value = pageFloat - index;
         value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
 
-        // Smooth fade and slide animation
         final opacity = value.clamp(0.0, 1.0);
         final slideOffset = (1 - opacity) * 50;
 
@@ -95,7 +91,7 @@ class _AnimatedOnboardingScreenState
           child: Transform.translate(
             offset: Offset(0, slideOffset),
             child: Transform.scale(
-              scale: 0.8 + (opacity * 0.2), // Scale from 0.8 to 1.0
+              scale: 0.8 + (opacity * 0.2),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -106,16 +102,17 @@ class _AnimatedOnboardingScreenState
                       style: AppTypography.h3.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
+                        height: 1.2,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     Text(
                       item.subtitle,
                       textAlign: TextAlign.center,
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textSecondary,
-                        height: 1.6,
+                        height: 1.55,
                       ),
                     ),
                   ],
@@ -129,9 +126,7 @@ class _AnimatedOnboardingScreenState
   }
 
   Widget _buildAnimationWidget(OnBoardingModel item) {
-    // Priority: Lottie Asset > Lottie Network > Image Asset
     if (item.lottieAssetPath != null) {
-      // Lottie animation from local asset
       return SizedBox(
         width: 400,
         height: 400,
@@ -152,7 +147,6 @@ class _AnimatedOnboardingScreenState
         ),
       );
     } else if (item.lottieURL != null) {
-      // Lottie animation from network
       return SizedBox(
         width: 500,
         height: 400,
@@ -163,7 +157,6 @@ class _AnimatedOnboardingScreenState
         ),
       );
     } else if (item.imagePath != null) {
-      // Regular image (PNG/JPG)
       return SizedBox(
         width: 400,
         height: 400,
@@ -183,10 +176,8 @@ class _AnimatedOnboardingScreenState
           },
         ),
       );
-    } else {
-      // Fallback
-      return const SizedBox.shrink();
     }
+    return const SizedBox.shrink();
   }
 
   @override
@@ -199,22 +190,27 @@ class _AnimatedOnboardingScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final items = _getOnboardingItems(l10n);
-    Size size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          CustomPaint(
-            painter: ArcPaint(),
-            child: SizedBox(height: size.height / 1.35, width: size.width),
+          _TopArcImageBackground(
+            asset: _topBgAsset,
+            height: size.height / 1.35,
           ),
-          // Image atau Lottie animation dengan smooth transition
+          // overlay curve halus (layer kedua)
+          IgnorePointer(
+            child: CustomPaint(
+              painter: ArcOverlayPaint(),
+              child: SizedBox(height: size.height / 1.35, width: size.width),
+            ),
+          ),
           AnimatedBuilder(
             animation: pageController,
             builder: (context, child) {
               double value = 0.0;
-              // Check if PageController is attached and has dimensions
               if (pageController.hasClients &&
                   pageController.position.haveDimensions) {
                 final page = pageController.page;
@@ -223,12 +219,10 @@ class _AnimatedOnboardingScreenState
                 }
               }
 
-              // Smooth fade and scale animation untuk gambar/animasi
               final opacity = (1 - value.abs() * 2).clamp(0.0, 1.0);
-              final scale = 0.9 + (opacity * 0.1); // Scale from 0.9 to 1.0
-              final slideOffset = value * 50; // Slide effect
+              final scale = 0.9 + (opacity * 0.1);
+              final slideOffset = value * 50;
 
-              // Only show if opacity is significant (avoid showing multiple images)
               if (opacity < 0.1) {
                 return const SizedBox.shrink();
               }
@@ -250,7 +244,6 @@ class _AnimatedOnboardingScreenState
               );
             },
           ),
-          // Content section
           Align(
             alignment: Alignment.bottomCenter,
             child: SizedBox(
@@ -272,7 +265,6 @@ class _AnimatedOnboardingScreenState
                       },
                     ),
                   ),
-                  // Dot indicator
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -329,11 +321,64 @@ class _AnimatedOnboardingScreenState
   }
 }
 
-class ArcPaint extends CustomPainter {
+class _TopArcImageBackground extends StatelessWidget {
+  const _TopArcImageBackground({
+    required this.asset,
+    required this.height,
+  });
+
+  final String asset;
+  final double height;
+
   @override
-  void paint(Canvas canvas, Size size) {
-    // Orange arc (background)
-    Path orangeArc = Path()
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: double.infinity,
+      child: ClipPath(
+        clipper: _TopArcClipper(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              asset,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF0F172A), Color(0xFF020617)],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Overlay gelap tipis agar area atas tetap kontras
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.08),
+                    Colors.black.withValues(alpha: 0.32),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TopArcClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
       ..moveTo(0, 0)
       ..lineTo(0, size.height - 175)
       ..quadraticBezierTo(
@@ -345,11 +390,17 @@ class ArcPaint extends CustomPainter {
       ..lineTo(size.width, size.height)
       ..lineTo(size.width, 0)
       ..close();
+  }
 
-    canvas.drawPath(orangeArc, Paint()..color = AppColors.primary);
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
 
-    // Light blue arc (overlay)
-    Path whiteArc = Path()
+class ArcOverlayPaint extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Layer curve halus (dulu whiteArc)
+    Path overlayArc = Path()
       ..moveTo(0.0, 0.0)
       ..lineTo(0.0, size.height - 180)
       ..quadraticBezierTo(
@@ -363,13 +414,12 @@ class ArcPaint extends CustomPainter {
       ..close();
 
     canvas.drawPath(
-      whiteArc,
-      Paint()..color = AppColors.primaryLight.withOpacity(0.3),
+      overlayArc,
+      Paint()..color = Colors.white.withValues(alpha: 0.14),
     );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
