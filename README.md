@@ -1,286 +1,154 @@
-# HRIS Mobile Application 📱
+# HRIS Mobile Application
 
-A comprehensive Human Resource Information System (HRIS) mobile application built with Flutter, based on POS Mobile Figma template design.
+Human Resource Information System (HRIS) mobile app built with Flutter. UI is inspired by modern HR dashboards; the **login** flow uses a **glassmorphism** (frosted glass) style with optional **Google Sign-In**.
 
-## ✨ Features
+## Features
 
-### 🏠 **Dashboard**
-- Employee welcome screen with personalized greeting
-- Today's attendance status with clock in/out functionality
-- Quick action buttons for common HRIS tasks
-- Monthly overview statistics (present days, absent days, late days, overtime hours)
+### Dashboard
+- Welcome / home with quick access to main areas
+- Attendance snapshot and shortcuts (structure ready for backend wiring)
+- Tab navigation (home, attendance, leave, profile)
 
-### ⏰ **Attendance Management**
-- Real-time attendance tracking
-- Clock in/out functionality with location tracking
-- Attendance history with detailed records
-- Working hours calculation and overtime tracking
-- Late arrival and early departure notifications
+### Attendance & leave
+- Attendance and leave screens with cards, lists, and mock-oriented layouts
+- Ready to connect to real APIs when endpoints are available
 
-### 🏖️ **Leave Management**
-- Leave balance overview for different leave types (Annual, Sick, Emergency, etc.)
-- Leave application with reason and attachment support
-- Leave history with approval status tracking
-- Visual progress indicators for leave usage
-- Emergency leave marking
+### Profile
+- Employee-oriented profile UI; session-aware display when auth data is available
+- Logout flow aligned with backend / local session rules
 
-### 👤 **Profile Management**
-- Comprehensive employee profile information
-- Personal details (contact, department, position, join date)
-- Years of service calculation
-- Settings and preferences
-- Secure logout functionality
+### Authentication & onboarding
+- **Email + password** login with validation messages shown **below** each field (outside the glass inputs)
+- **Google Sign-In** (configure OAuth per `GOOGLE_SIGNIN_SETUP.md` and platform files)
+- **Onboarding** slides (Lottie + assets under `assets/images/onboarding/`)
+- **Splash** with session restore when applicable
 
-## 🎨 Design System
+### UX / UI
+- **Liquid Glass–style notifications**: success, error, warning, and info messages use a top overlay with blur and motion (see `lib/core/utils/liquid_glass_toast.dart` and `SnackBarHelper`)
+- **Branding**: HRIS Portal logo on login (`assets/images/logo_login.png`)
 
-### **Colors**
-- **Primary**: Deep blue (#2B3A55) - Professional and trustworthy
-- **Secondary**: Light blue (#3EBAE0) - Modern and friendly
-- **Accent**: Orange (#FFA726) - Energetic highlights
-- **Status Colors**: Success (Green), Warning (Yellow), Error (Red), Info (Blue)
+## Design system
 
-### **Typography**
-- Clean, readable typography optimized for mobile devices
-- Consistent heading hierarchy (H1-H6)
-- Well-defined body text and label styles
-- Accessible font sizes and line heights
+- **App theme**: primary blues and neutrals in `lib/core/themes/app_theme.dart` and `lib/core/constants/app_colors.dart`
+- **Login screen**: separate glass treatment (background image, translucent pills, `_GlassInput` / `_GlassButton`)
+- **Typography & spacing**: `app_typography.dart`, `app_dimensions.dart`
 
-### **Components**
-- Material Design 3 principles
-- Consistent spacing and dimensions
-- Reusable cards and widgets
-- Smooth animations and transitions
+## Architecture (overview)
 
-## 🏗️ Architecture
-
-### **Project Structure**
 ```
 lib/
 ├── core/
-│   ├── constants/          # App constants (colors, strings, dimensions)
-│   └── themes/            # App theme configuration
+│   ├── constants/       # API, colors, typography, Google Sign-In config, etc.
+│   ├── network/         # Api client, helper, logging
+│   ├── routes/          # go_router setup
+│   ├── themes/
+│   └── utils/           # SnackBarHelper, liquid_glass_toast, ...
 ├── data/
-│   ├── models/            # Data models (User, Employee, Attendance, Leave)
-│   └── providers/         # Mock data providers (ready for API integration)
+│   ├── datasources/     # Remote auth, local Google session storage, ...
+│   └── models/
+├── domain/              # Entities / use case stubs (expand as needed)
+├── l10n/                # ARB + generated localizations (e.g. en, id)
 └── presentation/
-    ├── screens/           # All UI screens
-    │   ├── splash/        # Splash screen
-    │   ├── auth/          # Login screen
-    │   ├── dashboard/     # Main dashboard with tabs
-    │   ├── attendance/    # Attendance management
-    │   ├── leave/         # Leave management
-    │   └── profile/       # User profile
-    └── widgets/           # Reusable UI components
+    ├── providers/       # Riverpod (auth, profile snapshot, app providers, …)
+    ├── screens/
+    │   ├── splash/
+    │   ├── auth/        # login_screen.dart (glass UI)
+    │   ├── onboarding/
+    │   ├── dashboard/
+    │   ├── attendance/
+    │   ├── leave/
+    │   └── profile/
+    └── widgets/
 ```
 
-### **Key Features**
-- **Clean Architecture**: Separation of concerns with clear layers
-- **State Management**: Provider pattern (ready for complex state management)
-- **Mock Data**: Complete mock data structure for development and testing
-- **API Ready**: Structured for easy API integration
-- **Responsive Design**: Optimized for various screen sizes
-- **Type Safety**: Full Dart type safety with model classes
+- **State management**: **Riverpod** (`flutter_riverpod`), not the legacy `provider` package.
+- **Navigation**: **go_router**
+- **Layering**: data/domain/presentation separation; extend repositories and datasources when APIs are fixed.
 
-## 🚀 Getting Started
+## Getting started
 
-### **Prerequisites**
-- Flutter SDK (3.0 or higher)
-- Dart SDK
-- iOS development: Xcode (for iOS deployment)
-- Android development: Android Studio (for Android deployment)
+### Prerequisites
+- **Flutter** with **Dart SDK ^3.8.1** (see `pubspec.yaml`)
+- **Xcode** (iOS), **Android Studio / SDK** (Android)
 
-### **Installation**
+### Install
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-repo/HRIS-MOBILE.git
-   cd HRIS-MOBILE/hris_mobile_app
-   ```
+```bash
+git clone <repository-url>
+cd hris_mobile_app
+flutter pub get
+```
 
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
+Example remotes (use the one your team uses):
 
-3. **Run the application**
-   
-   **For Web:**
-   ```bash
-   flutter run -d chrome
-   ```
-   
-   **For iOS Simulator:**
-   ```bash
-   flutter emulators --launch apple_ios_simulator
-   flutter run -d ios
-   ```
-   
-   **For Android Emulator:**
-   ```bash
-   flutter emulators --launch Medium_Phone_API_35
-   flutter run -d android
-   ```
+- `https://github.com/yudiyusuf/sanivokasi-sani-mobile.git`
+- `https://github.com/Pramuhdiana/HRIS-MOBILE.git`
 
-### **Demo Credentials**
-For testing the login functionality:
+### Run
+
+```bash
+flutter run -d chrome    # web
+flutter run -d ios         # iOS simulator / device
+flutter run -d android     # Android emulator / device
+```
+
+### Demo login (if your backend accepts them)
 - **Email**: `demo@company.com`
 - **Password**: `demo123`
 
-## 📱 Screenshots
+Replace with credentials from your environment when integrating the real API.
 
-### Login Screen
-- Clean, professional login interface
-- Form validation with user-friendly error messages
-- Demo credentials provided for easy testing
+## Main dependencies
 
-### Dashboard
-- Welcome message with employee information
-- Current attendance status card
-- Quick action buttons for common tasks
-- Monthly statistics overview
+| Area | Packages (selected) |
+|------|---------------------|
+| State | `flutter_riverpod`, `riverpod_annotation` |
+| Routing | `go_router`, `go_router_builder` |
+| HTTP | `dio`, `http` |
+| Storage | `shared_preferences`, `path_provider` |
+| Auth | `google_sign_in` |
+| UI | `lottie`, `flutter_svg`, `cached_network_image`, `smooth_page_indicator`, `page_transition` |
+| Feedback | `awesome_snackbar_content` (e.g. material banner paths); primary in-app messages use **Liquid Glass** overlay via `SnackBarHelper` |
+| i18n | `flutter_localizations`, `intl`, generated code from `lib/l10n/*.arb` |
 
-### Attendance
-- Real-time attendance tracking
-- Detailed attendance history
-- Working hours calculation
-- Status indicators (Present, Late, Absent)
+## API integration
 
-### Leave Management
-- Visual leave balance cards
-- Leave type categorization with icons
-- Leave history with approval status
-- Progress indicators for leave usage
+- Endpoints and helpers live under `lib/core/constants/` and `lib/core/network/`.
+- Auth flows: `lib/presentation/providers/auth_provider.dart`, remote datasources under `lib/data/datasources/remote/`.
+- See `ARCHITECTURE.md` and `API_HELPER_GUIDE.md` for deeper detail.
 
-### Profile
-- Comprehensive employee information
-- Professional profile layout
-- Settings and preferences access
-- Secure logout functionality
+## Deployment
 
-## 🔧 Dependencies
+- **iOS**: `flutter build ios --release` (signing via Xcode).
+- **Android**: `flutter build apk` / `appbundle` as required by Play Console.
+- **Web**: `flutter build web` — deploy the `build/web` output to your host.
 
-### **Core Dependencies**
-- `flutter`: Flutter SDK
-- `provider`: State management
-- `go_router`: Navigation routing
-- `http` & `dio`: HTTP client for API calls
-- `shared_preferences`: Local storage
-- `intl`: Internationalization and date formatting
-- `equatable`: Value equality
+## Security notes
 
-### **UI Dependencies**
-- `flutter_svg`: SVG image support
-- `cached_network_image`: Optimized image loading
-- `image_picker`: Image selection functionality
+- Do not commit production secrets. Keep OAuth client configs and keys out of public forks if they are sensitive.
+- Adjust `google_sign_in_config.dart` and platform OAuth files per environment.
 
-## 🌐 API Integration
+## Roadmap (examples)
 
-The application is structured to easily integrate with REST APIs:
-
-### **Ready for Integration**
-- Service layer architecture in place
-- Mock data providers can be replaced with real API calls
-- HTTP client configuration ready
-- Error handling structure prepared
-- Authentication flow structured
-
-### **Mock Data Available**
-- User and Employee models
-- Attendance records with various statuses
-- Leave requests and balances
-- Dashboard statistics
-- Complete data relationships
-
-## 📦 Deployment
-
-### **iOS App Store**
-1. Configure iOS project settings in `ios/Runner.xcodeproj`
-2. Set up App Store Connect account
-3. Configure signing certificates
-4. Build release version: `flutter build ios --release`
-5. Upload to App Store Connect via Xcode
-
-### **Google Play Store**
-1. Configure Android project settings in `android/app/build.gradle`
-2. Set up Google Play Console account
-3. Configure app signing
-4. Build release APK: `flutter build apk --release`
-5. Upload to Google Play Console
-
-### **Web Deployment**
-1. Build web version: `flutter build web`
-2. Deploy `build/web` folder to web hosting service
-3. Configure domain and SSL certificate
-
-## 🔒 Security Features
-
-- Secure authentication flow
-- Form validation and sanitization
-- Safe navigation patterns
-- Proper error handling
-- No sensitive data in mock providers
-
-## 🎯 Future Enhancements
-
-### **Phase 2 Features**
-- [ ] Real-time notifications
-- [ ] Biometric authentication
-- [ ] Offline mode with sync
-- [ ] Dark mode support
-- [ ] Multi-language support
-- [ ] Advanced reporting and analytics
-
-### **Technical Improvements**
-- [ ] Unit and integration tests
-- [ ] CI/CD pipeline setup
-- [ ] Performance optimization
-- [ ] Accessibility improvements
-- [ ] Advanced state management (Bloc/Riverpod)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Development Team
-
-- **Frontend Developer**: Flutter UI/UX implementation
-- **Backend Integration**: Ready for API integration
-- **Design System**: Based on POS Mobile Figma template
-
-## 📞 Support
-
-For support and questions:
-- Create an issue in the GitHub repository
-- Contact the development team
-- Check the documentation for common solutions
-
----
-
-## 🎉 Project Status
-
-✅ **Completed:**
-- Flutter project setup with optimal structure
-- Complete design system implementation
-- All UI screens based on Figma template
-- Navigation flow between screens
-- Mock data structure for future API integration
-- Responsive design testing
-
-🔄 **Ready for:**
-- API integration
-- Real authentication system
+- Deeper API integration for attendance, leave, and profile
 - Push notifications
-- App store deployment
-- Production environment setup
+- Biometric unlock
+- Offline cache + sync
+- Expanded tests and CI/CD
+
+## Contributing
+
+1. Branch from `main` (or your team’s default branch).
+2. Commit with clear messages.
+3. Open a merge/pull request for review.
+
+## Support
+
+- Track issues in the GitHub repository you use for this project.
+- Internal docs: `DEVELOPER_GUIDE.md`, `GOOGLE_SIGNIN_SETUP.md`, `SNACKBAR_HELPER_GUIDE.md`, etc.
 
 ---
 
-*Built with ❤️ using Flutter - Ready for production deployment to iOS App Store and Google Play Store*
+**Status**: Active development — UI, auth plumbing, onboarding, and localization are in place; connect and harden APIs for production.
+
+*Built with Flutter.*
