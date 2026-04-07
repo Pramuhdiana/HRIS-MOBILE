@@ -1,0 +1,487 @@
+{
+  "@@locale": "en",
+  "appName": "HRIS Mobile",
+  "@appName": {
+    "description": "Application name"
+  },
+  "appVersion": "1.0.0",
+  "@appVersion": {
+    "description": "Application version"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link"
+  },
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button"
+  },
+  "rememberMe": "Remember Me",
+  "@rememberMe": {
+    "description": "Remember me checkbox"
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Create account button"
+  },
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Already have account text"
+  },
+  "dontHaveAccount": "Don't have an account?",
+  "@dontHaveAccount": {
+    "description": "Don't have account text"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation"
+  },
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Dashboard navigation"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile navigation"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings navigation"
+  },
+  "attendance": "Attendance",
+  "@attendance": {
+    "description": "Attendance navigation"
+  },
+  "leave": "Leave",
+  "@leave": {
+    "description": "Leave navigation"
+  },
+  "payroll": "Payroll",
+  "@payroll": {
+    "description": "Payroll navigation"
+  },
+  "employees": "Employees",
+  "@employees": {
+    "description": "Employees navigation"
+  },
+  "reports": "Reports",
+  "@reports": {
+    "description": "Reports navigation"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications navigation"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome greeting"
+  },
+  "todayAttendance": "Today's Attendance",
+  "@todayAttendance": {
+    "description": "Today attendance label"
+  },
+  "clockIn": "Clock In",
+  "@clockIn": {
+    "description": "Clock in action"
+  },
+  "clockOut": "Clock Out",
+  "@clockOut": {
+    "description": "Clock out action"
+  },
+  "checkIn": "Check In",
+  "@checkIn": {
+    "description": "Check in action"
+  },
+  "checkOut": "Check Out",
+  "@checkOut": {
+    "description": "Check out action"
+  },
+  "workingHours": "Working Hours",
+  "@workingHours": {
+    "description": "Working hours label"
+  },
+  "overtime": "Overtime",
+  "@overtime": {
+    "description": "Overtime label"
+  },
+  "present": "Present",
+  "@present": {
+    "description": "Present status"
+  },
+  "absent": "Absent",
+  "@absent": {
+    "description": "Absent status"
+  },
+  "late": "Late",
+  "@late": {
+    "description": "Late status"
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Personal information section"
+  },
+  "employeeId": "Employee ID",
+  "@employeeId": {
+    "description": "Employee ID label"
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name label"
+  },
+  "department": "Department",
+  "@department": {
+    "description": "Department label"
+  },
+  "position": "Position",
+  "@position": {
+    "description": "Position label"
+  },
+  "joinDate": "Join Date",
+  "@joinDate": {
+    "description": "Join date label"
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number label"
+  },
+  "address": "Address",
+  "@address": {
+    "description": "Address label"
+  },
+  "dateOfBirth": "Date of Birth",
+  "@dateOfBirth": {
+    "description": "Date of birth label"
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button"
+  },
+  "leaveBalance": "Leave Balance",
+  "@leaveBalance": {
+    "description": "Leave balance label"
+  },
+  "applyLeave": "Apply Leave",
+  "@applyLeave": {
+    "description": "Apply leave button"
+  },
+  "leaveHistory": "Leave History",
+  "@leaveHistory": {
+    "description": "Leave history label"
+  },
+  "leaveType": "Leave Type",
+  "@leaveType": {
+    "description": "Leave type label"
+  },
+  "startDate": "Start Date",
+  "@startDate": {
+    "description": "Start date label"
+  },
+  "endDate": "End Date",
+  "@endDate": {
+    "description": "End date label"
+  },
+  "reason": "Reason",
+  "@reason": {
+    "description": "Reason label"
+  },
+  "approved": "Approved",
+  "@approved": {
+    "description": "Approved status"
+  },
+  "pending": "Pending",
+  "@pending": {
+    "description": "Pending status"
+  },
+  "rejected": "Rejected",
+  "@rejected": {
+    "description": "Rejected status"
+  },
+  "annualLeave": "Annual Leave",
+  "@annualLeave": {
+    "description": "Annual leave type"
+  },
+  "sickLeave": "Sick Leave",
+  "@sickLeave": {
+    "description": "Sick leave type"
+  },
+  "emergencyLeave": "Emergency Leave",
+  "@emergencyLeave": {
+    "description": "Emergency leave type"
+  },
+  "salary": "Salary",
+  "@salary": {
+    "description": "Salary label"
+  },
+  "payslip": "Payslip",
+  "@payslip": {
+    "description": "Payslip label"
+  },
+  "basicSalary": "Basic Salary",
+  "@basicSalary": {
+    "description": "Basic salary label"
+  },
+  "allowances": "Allowances",
+  "@allowances": {
+    "description": "Allowances label"
+  },
+  "deductions": "Deductions",
+  "@deductions": {
+    "description": "Deductions label"
+  },
+  "netPay": "Net Pay",
+  "@netPay": {
+    "description": "Net pay label"
+  },
+  "grossPay": "Gross Pay",
+  "@grossPay": {
+    "description": "Gross pay label"
+  },
+  "tax": "Tax",
+  "@tax": {
+    "description": "Tax label"
+  },
+  "bonus": "Bonus",
+  "@bonus": {
+    "description": "Bonus label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button"
+  },
+  "view": "View",
+  "@view": {
+    "description": "View button"
+  },
+  "update": "Update",
+  "@update": {
+    "description": "Update button"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search button"
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": "Filter button"
+  },
+  "sort": "Sort",
+  "@sort": {
+    "description": "Sort button"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button"
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Done button"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No button"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  "noData": "No data available",
+  "@noData": {
+    "description": "No data message"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success message"
+  },
+  "loginSuccess": "Login successful! Welcome back.",
+  "@loginSuccess": {
+    "description": "Login success message"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error message"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Warning message"
+  },
+  "info": "Information",
+  "@info": {
+    "description": "Information message"
+  },
+  "emailRequired": "Email is required",
+  "@emailRequired": {
+    "description": "Email required error"
+  },
+  "passwordRequired": "Password is required",
+  "@passwordRequired": {
+    "description": "Password required error"
+  },
+  "invalidEmail": "Please enter a valid email",
+  "@invalidEmail": {
+    "description": "Invalid email error"
+  },
+  "passwordTooShort": "Password must be at least 6 characters",
+  "@passwordTooShort": {
+    "description": "Password too short error"
+  },
+  "networkError": "Network connection error",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "serverError": "Server error, please try again",
+  "@serverError": {
+    "description": "Server error message"
+  },
+  "unauthorized": "Unauthorized access",
+  "@unauthorized": {
+    "description": "Unauthorized error"
+  },
+  "sessionExpired": "Session expired, please login again",
+  "@sessionExpired": {
+    "description": "Session expired message"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label"
+  },
+  "thisWeek": "This Week",
+  "@thisWeek": {
+    "description": "This week label"
+  },
+  "thisMonth": "This Month",
+  "@thisMonth": {
+    "description": "This month label"
+  },
+  "selectDate": "Select Date",
+  "@selectDate": {
+    "description": "Select date label"
+  },
+  "selectTime": "Select Time",
+  "@selectTime": {
+    "description": "Select time label"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button"
+  },
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Get started button"
+  },
+  "welcomeToHRIS": "Welcome to HRIS Mobile",
+  "@welcomeToHRIS": {
+    "description": "Onboarding welcome title"
+  },
+  "welcomeDescription": "Manage your work life efficiently with our comprehensive Human Resource Information System. Everything you need in one place.",
+  "@welcomeDescription": {
+    "description": "Onboarding welcome description"
+  },
+  "trackAttendanceTitle": "Track Your Attendance",
+  "@trackAttendanceTitle": {
+    "description": "Onboarding attendance title"
+  },
+  "trackAttendanceDescription": "Clock in and out easily, view your working hours, and stay on top of your schedule. Never miss a beat.",
+  "@trackAttendanceDescription": {
+    "description": "Onboarding attendance description"
+  },
+  "manageLeavesTitle": "Manage Your Leaves",
+  "@manageLeavesTitle": {
+    "description": "Onboarding leave title"
+  },
+  "manageLeavesDescription": "Apply for leave, check your balance, and track your time off with just a few taps. Simple and intuitive.",
+  "@manageLeavesDescription": {
+    "description": "Onboarding leave description"
+  },
+  "pleaseLoginOrSignUp": "please login or sign up to continue our app",
+  "@pleaseLoginOrSignUp": {
+    "description": "Login screen subtitle"
+  },
+  "continueWithFacebook": "Continue with Facebook",
+  "@continueWithFacebook": {
+    "description": "Facebook login button"
+  },
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {
+    "description": "Google login button"
+  },
+  "continueWithApple": "Continue with Apple",
+  "@continueWithApple": {
+    "description": "Apple login button"
+  },
+  "or": "or",
+  "@or": {
+    "description": "Or separator"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "indonesian": "Indonesian",
+  "@indonesian": {
+    "description": "Indonesian language name"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language name"
+  }
+}
