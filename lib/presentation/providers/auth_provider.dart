@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/remote/auth_datasource.dart';
 import '../../data/datasources/remote/google_auth_datasource.dart';
-import '../../data/datasources/remote/ms_user_bootstrap_datasource.dart';
-import '../../core/constants/company_context.dart';
 import '../../core/errors/failures.dart';
 import 'app_providers.dart';
 
@@ -18,11 +16,6 @@ final authDataSourceProvider = Provider<AuthDataSource>((ref) {
 final googleAuthDataSourceProvider = Provider<GoogleAuthDataSource>((ref) {
   return GoogleAuthDataSource();
 });
-
-/// MS-User bootstrap provider (perusahaan/profile/notifications)
-final msUserBootstrapDataSourceProvider = Provider<MsUserBootstrapDataSource>(
-  (ref) => MsUserBootstrapDataSource(ref.watch(apiClientProvider)),
-);
 
 /// Login State
 class LoginState {
@@ -63,21 +56,13 @@ class LoginState {
 class AuthNotifier extends StateNotifier<LoginState> {
   final AuthDataSource _authDataSource;
   final GoogleAuthDataSource _googleAuthDataSource;
-  final MsUserBootstrapDataSource _msUserBootstrapDataSource;
   final Ref _ref;
 
-  AuthNotifier(
-    this._authDataSource,
-    this._googleAuthDataSource,
-    this._msUserBootstrapDataSource,
-    this._ref,
-  ) : super(const LoginState());
+  AuthNotifier(this._authDataSource, this._googleAuthDataSource, this._ref)
+    : super(const LoginState());
 
   /// Login with email and password
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     state = state.copyWith(
       isEmailLoginLoading: true,
       isGoogleLoginLoading: false,
@@ -92,30 +77,27 @@ class AuthNotifier extends StateNotifier<LoginState> {
 
       // Extract token from response
       // Response format: { "status": 1, "message": "ok", "data": { "token": "..." } }
-      final token = response['data']?['token'] ?? 
-                   response['token'] ?? 
-                   response['access_token'] ??
-                   response['accessToken'];
+      final token =
+          response['data']?['token'] ??
+          response['token'] ??
+          response['access_token'] ??
+          response['accessToken'];
 
       if (token != null && token.toString().isNotEmpty) {
         // Update auth token in provider
         final tokenString = token.toString();
         _ref.read(authTokenProvider.notifier).state = tokenString;
         _ref.read(apiClientProvider).updateAuthToken(tokenString);
-        
+
         // Save token and user data to SharedPreferences
         final prefs = _ref.read(sharedPreferencesProvider);
         await prefs.setString('auth_token', tokenString);
         await prefs.setString('user_email', email);
-        await prefs.setString('login_method', 'email');
-        
+
         // Save full response data if available
         if (response['data'] != null) {
           // You can save additional user data here if needed
         }
-
-        // Post-login bootstrap (non-blocking for UI success)
-        await _postLoginBootstrapIfPossible(tokenString);
       } else {
         throw const ServerFailure('Token not found in response');
       }
@@ -174,7 +156,7 @@ class AuthNotifier extends StateNotifier<LoginState> {
     try {
       // Step 1: Sign in with Google
       final googleAccount = await _googleAuthDataSource.signIn();
-      
+
       if (googleAccount == null) {
         // User cancelled Google sign in
         state = state.copyWith(
@@ -201,7 +183,8 @@ class AuthNotifier extends StateNotifier<LoginState> {
           accessToken: accessToken,
           idToken: idToken,
         );
-        backendToken = backendResponse['data']?['token'] ??
+        backendToken =
+            backendResponse['data']?['token'] ??
             backendResponse['token'] ??
             backendResponse['access_token'] ??
             backendResponse['accessToken'];
@@ -219,10 +202,12 @@ class AuthNotifier extends StateNotifier<LoginState> {
 
       final bool backendOk =
           backendToken != null && backendToken.toString().isNotEmpty;
-      final String tokenString =
-          backendOk ? backendToken.toString() : 'google_local:${googleAccount.id}';
+      final String tokenString = backendOk
+          ? backendToken.toString()
+          : 'google_local:${googleAccount.id}';
 
-      final Map<String, dynamic> userDataForState = backendOk && backendResponse != null
+      final Map<String, dynamic> userDataForState =
+          backendOk && backendResponse != null
           ? _jsonSafeDeepCopy(backendResponse)
           : {
               'localOnly': true,
@@ -258,8 +243,9 @@ class AuthNotifier extends StateNotifier<LoginState> {
             'idToken': idToken,
             'serverAuthCode': googleAuth.serverAuthCode,
           },
-          'backendLoginResponse':
-              backendResponse != null ? _jsonSafeDeepCopy(backendResponse) : null,
+          'backendLoginResponse': backendResponse != null
+              ? _jsonSafeDeepCopy(backendResponse)
+              : null,
         });
       } catch (_) {}
 
@@ -270,9 +256,6 @@ class AuthNotifier extends StateNotifier<LoginState> {
         token: tokenString,
         error: null,
       );
-
-      // Bootstrap hanya jika token berasal dari backend (bukan google_local)
-      await _postLoginBootstrapIfPossible(tokenString);
     } on Failure catch (e) {
       state = state.copyWith(
         isEmailLoginLoading: false,
@@ -285,50 +268,6 @@ class AuthNotifier extends StateNotifier<LoginState> {
         isGoogleLoginLoading: false,
         error: 'Google login failed: $e',
       );
-    }
-  }
-
-  Future<void> _postLoginBootstrapIfPossible(String tokenString) async {
-    // Token lokal (fallback) tidak valid untuk ms-user.
-    if (tokenString.startsWith('google_local:')) return;
-
-    try {
-      // Jalankan paralel agar cepat.
-      final results = await Future.wait([
-        _msUserBootstrapDataSource.getPerusahaan(),
-        _msUserBootstrapDataSource.getProfile(),
-        _msUserBootstrapDataSource.getNotifications(),
-      ]);
-
-      final perusahaan = results[0];
-      final profile = results[1];
-      final notifications = results[2];
-
-      final prefs = _ref.read(sharedPreferencesProvider);
-      await prefs.setString('ms_user_perusahaan', jsonEncode(perusahaan));
-      await prefs.setString('ms_user_profile', jsonEncode(profile));
-      await prefs.setString('ms_user_notifications', jsonEncode(notifications));
-
-      // Set company context untuk header X-Company-Id jika dibutuhkan oleh service lain.
-      final data = perusahaan['data'];
-      if (data is Map<String, dynamic>) {
-        final id = data['id'];
-        final name = (data['app_name'] ?? data['nama'] ?? 'Company').toString();
-        final logo = (data['path_logo'] ?? data['path_favicon'])?.toString();
-
-        if (id != null) {
-          final ctx = CompanyContext(
-            companyId: id.toString(),
-            companyName: name,
-            companyLogo: logo,
-            settings: data,
-          );
-          _ref.read(companyContextProvider.notifier).setCompany(ctx);
-          _ref.read(apiClientProvider).updateCompanyContext(ctx);
-        }
-      }
-    } catch (_) {
-      // Bootstrap gagal tidak boleh menggagalkan login.
     }
   }
 
@@ -350,6 +289,5 @@ Map<String, dynamic> _jsonSafeDeepCopy(Map<String, dynamic> source) {
 final authProvider = StateNotifierProvider<AuthNotifier, LoginState>((ref) {
   final authDataSource = ref.watch(authDataSourceProvider);
   final googleAuthDataSource = ref.watch(googleAuthDataSourceProvider);
-  final msUserBootstrap = ref.watch(msUserBootstrapDataSourceProvider);
-  return AuthNotifier(authDataSource, googleAuthDataSource, msUserBootstrap, ref);
+  return AuthNotifier(authDataSource, googleAuthDataSource, ref);
 });

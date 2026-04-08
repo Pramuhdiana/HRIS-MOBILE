@@ -1,14 +1,69 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
 enum LiquidToastType { success, error, warning, info }
 
+class _ToastSlot {
+  _ToastSlot({
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.message,
+  });
+
+  final String id;
+  final LiquidToastType type;
+  final String title;
+  final String message;
+  int count = 1;
+
+  String get coalesceKey => '${type.index}|$title|$message';
+}
+
+double _layoutTop(
+  List<_ToastSlot> slots,
+  _ToastSlot slot,
+  Set<String> exitingIds,
+) {
+  final isExiting = exitingIds.contains(slot.id);
+  if (isExiting) {
+    final idx = slots.indexOf(slot);
+    return idx * 14.0;
+  }
+  final nonExiting = <_ToastSlot>[
+    for (final s in slots)
+      if (!exitingIds.contains(s.id)) s,
+  ];
+  final c = nonExiting.indexOf(slot);
+  return (c >= 0 ? c : 0) * 14.0;
+}
+
+String? _frontInteractiveId(List<_ToastSlot> slots, Set<String> exitingIds) {
+  for (final s in slots) {
+    if (!exitingIds.contains(s.id)) return s.id;
+  }
+  return null;
+}
+
 /// Toast bergaya liquid glass: turun dari atas + skala “tetes” (iOS-like).
+/// Smart stack: isi sama digabung; isi beda ditumpuk. Keluar dengan animasi
+/// (geser ke atas + fade); kartu lain [AnimatedPositioned] mengisi baris tanpa loncat.
 class LiquidGlassToast {
   LiquidGlassToast._();
 
+  static const int _maxStack = 3;
+  static const Duration _moveDuration = Duration(milliseconds: 420);
+  static const Duration _exitDuration = Duration(milliseconds: 400);
+
   static OverlayEntry? _entry;
+  static final ValueNotifier<List<_ToastSlot>> _notifier =
+      ValueNotifier<List<_ToastSlot>>([]);
+  static final Map<String, Timer> _timers = {};
+  static final Set<String> _exitingIds = {};
+  static final Set<String> _dropInSeenIds = {};
+  static int _exitToken = 0;
 
   static void show(
     BuildContext context, {
@@ -17,53 +72,316 @@ class LiquidGlassToast {
     required LiquidToastType type,
     Duration displayDuration = const Duration(milliseconds: 3600),
   }) {
-    dismiss();
     final overlayState = Overlay.maybeOf(context, rootOverlay: true);
     if (overlayState == null) return;
 
-    late OverlayEntry entry;
-    entry = OverlayEntry(
-      builder: (ctx) => _LiquidGlassToastLayer(
-        title: title,
-        message: message,
-        type: type,
-        displayDuration: displayDuration,
-        onDispose: () {
-          entry.remove();
-          if (_entry == entry) _entry = null;
-        },
-      ),
+    final key = '${type.index}|$title|$message';
+    final list = List<_ToastSlot>.from(_notifier.value);
+
+    if (list.isNotEmpty && list.first.coalesceKey == key) {
+      list.first.count++;
+      _notifier.value = list;
+      _scheduleDismiss(list.first.id, displayDuration);
+      return;
+    }
+
+    final id = '${DateTime.now().microsecondsSinceEpoch}';
+    list.insert(
+      0,
+      _ToastSlot(id: id, type: type, title: title, message: message),
     );
-    _entry = entry;
-    overlayState.insert(entry);
+    while (list.length > _maxStack) {
+      final removed = list.removeLast();
+      _timers[removed.id]?.cancel();
+      _timers.remove(removed.id);
+      _dropInSeenIds.remove(removed.id);
+    }
+    _notifier.value = list;
+    _scheduleDismiss(id, displayDuration);
+    _ensureOverlay(overlayState);
+  }
+
+  static void _ensureOverlay(OverlayState overlayState) {
+    if (_entry != null) return;
+    _entry = OverlayEntry(
+      builder: (ctx) {
+        return ValueListenableBuilder<List<_ToastSlot>>(
+          valueListenable: _notifier,
+          builder: (context, slots, _) {
+            if (slots.isEmpty) return const SizedBox.shrink();
+            return _ToastStackLayer(
+              slots: slots,
+              exitingIds: _exitingIds,
+              onDismissSlot: _beginExitAnimation,
+            );
+          },
+        );
+      },
+    );
+    overlayState.insert(_entry!);
+  }
+
+  static void _scheduleDismiss(String id, Duration displayDuration) {
+    _timers[id]?.cancel();
+    _timers[id] = Timer(displayDuration, () {
+      _timers.remove(id);
+      _beginExitAnimation(id);
+    });
+  }
+
+  /// Mulai animasi hilang; setelah [_exitDuration] baru hapus dari daftar.
+  static void _beginExitAnimation(String id) {
+    if (!_notifier.value.any((e) => e.id == id)) return;
+    if (_exitingIds.contains(id)) return;
+    _exitingIds.add(id);
+    _notifier.value = List<_ToastSlot>.from(_notifier.value);
+
+    final token = _exitToken;
+    Future<void>.delayed(_exitDuration, () {
+      if (token != _exitToken) return;
+      _exitingIds.remove(id);
+      _removeSlot(id);
+    });
+  }
+
+  static void _removeSlot(String id) {
+    _timers[id]?.cancel();
+    _timers.remove(id);
+    _dropInSeenIds.remove(id);
+    final list = List<_ToastSlot>.from(_notifier.value);
+    list.removeWhere((e) => e.id == id);
+    _notifier.value = list;
+    if (list.isEmpty) {
+      _entry?.remove();
+      _entry = null;
+    }
   }
 
   static void dismiss() {
+    _exitToken++;
+    for (final t in _timers.values) {
+      t.cancel();
+    }
+    _timers.clear();
+    _exitingIds.clear();
+    _dropInSeenIds.clear();
+    _notifier.value = [];
     _entry?.remove();
     _entry = null;
   }
 }
 
-class _LiquidGlassToastLayer extends StatefulWidget {
-  const _LiquidGlassToastLayer({
-    required this.title,
-    required this.message,
-    required this.type,
-    required this.displayDuration,
-    required this.onDispose,
+class _ToastStackLayer extends StatelessWidget {
+  const _ToastStackLayer({
+    required this.slots,
+    required this.exitingIds,
+    required this.onDismissSlot,
   });
 
-  final String title;
-  final String message;
-  final LiquidToastType type;
-  final Duration displayDuration;
-  final VoidCallback onDispose;
+  final List<_ToastSlot> slots;
+  final Set<String> exitingIds;
+  final void Function(String id) onDismissSlot;
 
   @override
-  State<_LiquidGlassToastLayer> createState() => _LiquidGlassToastLayerState();
+  Widget build(BuildContext context) {
+    final pad = MediaQuery.paddingOf(context);
+    const cardRegionHeight = 130.0;
+    final stackHeight = cardRegionHeight + (slots.length - 1) * 14.0;
+    final frontId = _frontInteractiveId(slots, exitingIds);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          Positioned(
+            left: 16,
+            right: 16,
+            top: pad.top + 10,
+            child: SizedBox(
+              height: stackHeight,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.topCenter,
+                children: [
+                  for (final slot in slots.reversed)
+                    AnimatedPositioned(
+                      key: ValueKey<String>(slot.id),
+                      duration: LiquidGlassToast._moveDuration,
+                      curve: Curves.easeOutCubic,
+                      top: _layoutTop(slots, slot, exitingIds),
+                      left: 0,
+                      right: 0,
+                      child: IgnorePointer(
+                        ignoring: slot.id != frontId,
+                        child: _StackToastItem(
+                          slot: slot,
+                          slots: slots,
+                          exitingIds: exitingIds,
+                          onTap: () => onDismissSlot(slot.id),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _LiquidGlassToastLayerState extends State<_LiquidGlassToastLayer>
+class _StackToastItem extends StatelessWidget {
+  const _StackToastItem({
+    required this.slot,
+    required this.slots,
+    required this.exitingIds,
+    required this.onTap,
+  });
+
+  final _ToastSlot slot;
+  final List<_ToastSlot> slots;
+  final Set<String> exitingIds;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = _accentForType(slot.type);
+    final icon = _iconForType(slot.type);
+    final title = slot.count > 1 ? '${slot.title}  ×${slot.count}' : slot.title;
+
+    Widget card = _GlassToastCard(
+      accent: accent,
+      icon: icon,
+      title: title,
+      message: slot.message,
+    );
+
+    card = GestureDetector(
+      onTap: onTap,
+      child: card,
+    );
+
+    if (exitingIds.contains(slot.id)) {
+      card = _ExitSlideWrapper(child: card);
+    } else {
+      final compact = <_ToastSlot>[
+        for (final s in slots)
+          if (!exitingIds.contains(s.id)) s,
+      ].indexOf(slot);
+      if (compact == 0) {
+        card = _DropInToastWrapper(
+          slotId: slot.id,
+          child: card,
+        );
+      } else {
+        final depth = compact.toDouble();
+        card = Transform.scale(
+          scale: (1.0 - depth * 0.035).clamp(0.88, 1.0),
+          alignment: Alignment.topCenter,
+          child: Opacity(
+            opacity: (1.0 - depth * 0.12).clamp(0.55, 1.0),
+            child: card,
+          ),
+        );
+      }
+    }
+
+    return card;
+  }
+
+  Color _accentForType(LiquidToastType type) {
+    switch (type) {
+      case LiquidToastType.success:
+        return const Color(0xFF34C759);
+      case LiquidToastType.error:
+        return const Color(0xFFFF453A);
+      case LiquidToastType.warning:
+        return const Color(0xFFFF9F0A);
+      case LiquidToastType.info:
+        return const Color(0xFF0A84FF);
+    }
+  }
+
+  IconData _iconForType(LiquidToastType type) {
+    switch (type) {
+      case LiquidToastType.success:
+        return Icons.check_circle_rounded;
+      case LiquidToastType.error:
+        return Icons.error_rounded;
+      case LiquidToastType.warning:
+        return Icons.warning_rounded;
+      case LiquidToastType.info:
+        return Icons.info_rounded;
+    }
+  }
+}
+
+/// Geser ke atas + fade saat menghilang (bukan hilang tiba-tiba).
+class _ExitSlideWrapper extends StatefulWidget {
+  const _ExitSlideWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ExitSlideWrapper> createState() => _ExitSlideWrapperState();
+}
+
+class _ExitSlideWrapperState extends State<_ExitSlideWrapper>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(
+      duration: LiquidGlassToast._exitDuration,
+      vsync: this,
+    );
+    _c.forward();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final curved = CurvedAnimation(parent: _c, curve: Curves.easeInCubic);
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, child) {
+        return Opacity(
+          opacity: Tween<double>(begin: 1, end: 0).evaluate(curved).clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, Tween<double>(begin: 0, end: -56).evaluate(curved)),
+            child: child,
+          ),
+        );
+      },
+      child: widget.child,
+    );
+  }
+}
+
+class _DropInToastWrapper extends StatefulWidget {
+  const _DropInToastWrapper({
+    required this.child,
+    required this.slotId,
+  });
+
+  final Widget child;
+  final String slotId;
+
+  @override
+  State<_DropInToastWrapper> createState() => _DropInToastWrapperState();
+}
+
+class _DropInToastWrapperState extends State<_DropInToastWrapper>
     with SingleTickerProviderStateMixin {
   late AnimationController _c;
   late Animation<double> _slide;
@@ -86,7 +404,6 @@ class _LiquidGlassToastLayerState extends State<_LiquidGlassToastLayer>
       parent: _c,
       curve: const Interval(0, 0.45, curve: Curves.easeOut),
     );
-    // Sedikit “nenang” vertikal di awal seperti tetes mengenai permukaan
     _scaleY = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: 0.72, end: 1.08).chain(
@@ -116,19 +433,13 @@ class _LiquidGlassToastLayerState extends State<_LiquidGlassToastLayer>
       ),
     ]).animate(_c);
 
-    _c.forward();
-
-    Future<void>.delayed(widget.displayDuration, () {
-      if (!mounted) return;
-      _close();
-    });
-  }
-
-  Future<void> _close() async {
-    if (!mounted) return;
-    await _c.reverse();
-    if (!mounted) return;
-    widget.onDispose();
+    final skip = LiquidGlassToast._dropInSeenIds.contains(widget.slotId);
+    if (skip) {
+      _c.value = 1;
+    } else {
+      LiquidGlassToast._dropInSeenIds.add(widget.slotId);
+      _c.forward();
+    }
   }
 
   @override
@@ -139,86 +450,29 @@ class _LiquidGlassToastLayerState extends State<_LiquidGlassToastLayer>
 
   @override
   Widget build(BuildContext context) {
-    final pad = MediaQuery.paddingOf(context);
-    final accent = _accentForType(widget.type);
-    final icon = _iconForType(widget.type);
-
-    return Material(
-      type: MaterialType.transparency,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _close,
-              child: const SizedBox.expand(),
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            top: pad.top + 10,
-            child: AnimatedBuilder(
-              animation: _c,
-              builder: (context, child) {
-                final t = _slide.value;
-                final dy = (1 - t) * -72;
-                return Opacity(
-                  opacity: _fade.value.clamp(0.0, 1.0),
-                  child: Transform.translate(
-                    offset: Offset(0, dy),
-                    child: Transform(
-                      alignment: Alignment.topCenter,
-                      transform: Matrix4.diagonal3Values(
-                        _scaleX.value,
-                        _scaleY.value,
-                        1,
-                      ),
-                      child: child,
-                    ),
-                  ),
-                );
-              },
-              child: GestureDetector(
-                onTap: _close,
-                child: _GlassToastCard(
-                  accent: accent,
-                  icon: icon,
-                  title: widget.title,
-                  message: widget.message,
-                ),
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, child) {
+        final t = _slide.value;
+        final dy = (1 - t) * -72;
+        return Opacity(
+          opacity: _fade.value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, dy),
+            child: Transform(
+              alignment: Alignment.topCenter,
+              transform: Matrix4.diagonal3Values(
+                _scaleX.value,
+                _scaleY.value,
+                1,
               ),
+              child: child,
             ),
           ),
-        ],
-      ),
+        );
+      },
+      child: widget.child,
     );
-  }
-
-  Color _accentForType(LiquidToastType type) {
-    switch (type) {
-      case LiquidToastType.success:
-        return const Color(0xFF34C759);
-      case LiquidToastType.error:
-        return const Color(0xFFFF453A);
-      case LiquidToastType.warning:
-        return const Color(0xFFFF9F0A);
-      case LiquidToastType.info:
-        return const Color(0xFF0A84FF);
-    }
-  }
-
-  IconData _iconForType(LiquidToastType type) {
-    switch (type) {
-      case LiquidToastType.success:
-        return Icons.check_circle_rounded;
-      case LiquidToastType.error:
-        return Icons.error_rounded;
-      case LiquidToastType.warning:
-        return Icons.warning_rounded;
-      case LiquidToastType.info:
-        return Icons.info_rounded;
-    }
   }
 }
 

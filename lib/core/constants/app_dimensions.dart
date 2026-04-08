@@ -9,6 +9,7 @@ class AppDimensions {
   static const double paddingL = 24.0;
   static const double paddingXL = 32.0;
   static const double paddingXXL = 48.0;
+  static const double paddingXXXL = 64.0;
 
   // Border Radius
   static const double radiusXS = 4.0;
@@ -38,7 +39,7 @@ class AppDimensions {
 
   // Card Dimensions
   static const double cardElevation = 2.0;
-  static const double cardRadius = 12.0;
+  static const double cardRadius = 20.0;
   static const double cardPadding = 16.0;
 
   // AppBar

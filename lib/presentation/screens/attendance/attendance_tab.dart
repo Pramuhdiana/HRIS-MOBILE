@@ -3,9 +3,12 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/layout/dashboard_tab_bottom_inset.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../../data/models/attendance_model.dart';
 import '../../widgets/attendance_list_item.dart';
+import '../../widgets/liquid_glass_card.dart';
+import '../../widgets/liquid_glass_scaffold.dart';
 
 /// Attendance Tab - Shows attendance history and current status
 /// Based on POS Mobile Figma Template design
@@ -27,10 +30,12 @@ class _AttendanceTabState extends State<AttendanceTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return LiquidGlassScaffold(
       appBar: AppBar(
         title: const Text(AppStrings.attendance),
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () {
@@ -43,32 +48,17 @@ class _AttendanceTabState extends State<AttendanceTab> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // Simulate refresh
-          await Future.delayed(const Duration(seconds: 1));
-        },
-        child: Column(
+            onRefresh: () async {
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: Column(
           children: [
             // Current Status Card
-            Container(
-              margin: const EdgeInsets.all(AppDimensions.paddingL),
+            Padding(
               padding: const EdgeInsets.all(AppDimensions.paddingL),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.secondary, AppColors.secondaryLight],
-                ),
-                borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.secondary.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
+              child: LiquidGlassCard(
+                borderRadius: AppDimensions.cardRadius,
+                child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,7 +66,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
                       Text(
                         'Current Status',
                         style: AppTypography.h6.copyWith(
-                          color: AppColors.textOnPrimary,
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -137,8 +127,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.textOnPrimary,
-                        foregroundColor: AppColors.secondary,
+                        backgroundColor: const Color(0xFF4A90E2),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           vertical: AppDimensions.paddingM,
                         ),
@@ -150,17 +140,13 @@ class _AttendanceTabState extends State<AttendanceTab> {
                 ],
               ),
             ),
+            ),
 
             // Attendance History Section
             Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.surfaceLight,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(AppDimensions.radiusL),
-                    topRight: Radius.circular(AppDimensions.radiusL),
-                  ),
-                ),
+              child: LiquidGlassCard(
+                borderRadius: AppDimensions.radiusL,
+                padding: EdgeInsets.zero,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -192,7 +178,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                     // Attendance List
                     Expanded(
                       child: ListView.builder(
-                        padding: EdgeInsets.zero,
+                        padding: EdgeInsets.only(
+                          bottom: dashboardTabScrollBottomPadding(context),
+                        ),
                         itemCount: attendanceRecords.length,
                         itemBuilder: (context, index) {
                           return AttendanceListItem(
@@ -215,17 +203,17 @@ class _AttendanceTabState extends State<AttendanceTab> {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
-        color: AppColors.textOnPrimary.withOpacity(0.2),
+        color: Colors.white.withOpacity(0.36),
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.textOnPrimary, size: AppDimensions.iconM),
+          Icon(icon, color: AppColors.textPrimary, size: AppDimensions.iconM),
           const SizedBox(height: AppDimensions.paddingS),
           Text(
             time,
             style: AppTypography.h6.copyWith(
-              color: AppColors.textOnPrimary,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -233,7 +221,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
           Text(
             title,
             style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textOnPrimary.withOpacity(0.8),
+              color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),

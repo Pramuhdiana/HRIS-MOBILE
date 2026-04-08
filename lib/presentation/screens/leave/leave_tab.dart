@@ -3,10 +3,13 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/layout/dashboard_tab_bottom_inset.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../../data/models/leave_model.dart';
 import '../../widgets/leave_balance_card.dart';
 import '../../widgets/leave_list_item.dart';
+import '../../widgets/liquid_glass_card.dart';
+import '../../widgets/liquid_glass_scaffold.dart';
 
 /// Leave Tab - Shows leave balance and leave history
 /// Based on POS Mobile Figma Template design
@@ -38,10 +41,12 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return LiquidGlassScaffold(
       appBar: AppBar(
         title: const Text(AppStrings.leave),
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () {
@@ -88,33 +93,24 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
 
   Widget _buildBalanceTab() {
     return RefreshIndicator(
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 1));
-      },
-      child: SingleChildScrollView(
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+          },
+          child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(AppDimensions.paddingL),
+        padding: EdgeInsets.fromLTRB(
+          AppDimensions.paddingL,
+          AppDimensions.paddingL,
+          AppDimensions.paddingL,
+          AppDimensions.paddingL +
+              dashboardTabScrollBottomPadding(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Info
-            Container(
-              padding: const EdgeInsets.all(AppDimensions.paddingL),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.accent, AppColors.accentLight],
-                ),
-                borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accent.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+            LiquidGlassCard(
+              borderRadius: AppDimensions.cardRadius,
               child: Row(
                 children: [
                   Expanded(
@@ -124,7 +120,7 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
                         Text(
                           'Leave Year ${DateTime.now().year}',
                           style: AppTypography.h6.copyWith(
-                            color: AppColors.textOnPrimary,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -132,7 +128,7 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
                         Text(
                           'Plan your time off wisely',
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textOnPrimary.withOpacity(0.8),
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -141,7 +137,7 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
                   Container(
                     padding: const EdgeInsets.all(AppDimensions.paddingM),
                     decoration: BoxDecoration(
-                      color: AppColors.textOnPrimary.withOpacity(0.2),
+                      color: Colors.white.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(
                         AppDimensions.radiusM,
                       ),
@@ -149,7 +145,7 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
                     child: Icon(
                       Icons.calendar_month,
                       size: AppDimensions.iconL,
-                      color: AppColors.textOnPrimary,
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -176,19 +172,8 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
             const SizedBox(height: AppDimensions.paddingL),
 
             // Quick Stats
-            Container(
-              padding: const EdgeInsets.all(AppDimensions.paddingL),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
-                borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadow,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+            LiquidGlassCard(
+              borderRadius: AppDimensions.cardRadius,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -238,104 +223,114 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
 
   Widget _buildHistoryTab() {
     return RefreshIndicator(
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 1));
-      },
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingL),
-            color: AppColors.surfaceLight,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.paddingM,
-                      vertical: AppDimensions.paddingS,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.radiusM,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: AppDimensions.iconS,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: AppDimensions.paddingS),
-                        Text(
-                          'Search leave requests...',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+          },
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AppDimensions.paddingL),
+                child: LiquidGlassCard(
+                  borderRadius: AppDimensions.radiusM,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingM,
+                            vertical: AppDimensions.paddingS,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppDimensions.paddingM),
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingS),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                  ),
-                  child: Icon(
-                    Icons.tune,
-                    size: AppDimensions.iconS,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Leave History List
-          Expanded(
-            child: leaveRecords.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.event_note_outlined,
-                          size: 64,
-                          color: AppColors.textLight,
-                        ),
-                        const SizedBox(height: AppDimensions.paddingM),
-                        Text(
-                          AppStrings.noData,
-                          style: AppTypography.bodyLarge.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(AppDimensions.paddingL),
-                    itemCount: leaveRecords.length,
-                    itemBuilder: (context, index) {
-                      return LeaveListItem(
-                        leave: leaveRecords[index],
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Leave details coming soon'),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.radiusM,
                             ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                size: AppDimensions.iconS,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(width: AppDimensions.paddingS),
+                              Text(
+                                'Search leave requests...',
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.paddingM),
+                      Container(
+                        padding: const EdgeInsets.all(AppDimensions.paddingS),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.24),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.tune,
+                          size: AppDimensions.iconS,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              Expanded(
+                child: leaveRecords.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.event_note_outlined,
+                              size: 64,
+                              color: AppColors.textLight,
+                            ),
+                            const SizedBox(height: AppDimensions.paddingM),
+                            Text(
+                              AppStrings.noData,
+                              style: AppTypography.bodyLarge.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                          AppDimensions.paddingL,
+                          AppDimensions.paddingL,
+                          AppDimensions.paddingL,
+                          AppDimensions.paddingL +
+                              dashboardTabScrollBottomPadding(context),
+                        ),
+                        itemCount: leaveRecords.length,
+                        itemBuilder: (context, index) {
+                          return LeaveListItem(
+                            leave: leaveRecords[index],
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Leave details coming soon'),
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 

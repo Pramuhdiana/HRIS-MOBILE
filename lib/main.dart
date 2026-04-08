@@ -30,7 +30,7 @@ class HRISMobileApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(languageProvider);
-    final router = AppRouter.router(ref);
+    final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
       title: AppStrings.appName,

@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../data/models/leave_model.dart';
+import 'liquid_glass_card.dart';
 
 /// Leave List Item Widget - Shows individual leave request
 /// Based on POS Mobile Figma Template design
@@ -97,27 +98,13 @@ class LeaveListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.paddingM),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingL),
-            child: Column(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+      child: LiquidGlassCard(
+        onTap: onTap,
+        borderRadius: AppDimensions.cardRadius,
+        padding: const EdgeInsets.all(AppDimensions.paddingL),
+        child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header Row
@@ -401,8 +388,6 @@ class LeaveListItem extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
       ),
     );
   }

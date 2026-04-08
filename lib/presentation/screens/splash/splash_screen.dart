@@ -23,7 +23,6 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with TickerProviderStateMixin {
-  static const _bgAsset = 'assets/images/bg-login.jpg';
   static const _logoAsset = 'assets/images/logo_splash_screen.png';
 
   late AnimationController _c;
@@ -254,15 +253,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                 color: Colors.white,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
+                                shadows: const [
+                                  Shadow(
+                                    color: Color(0x66000000),
+                                    blurRadius: 16,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: AppDimensions.paddingS),
                             Text(
                               'Human Resource Information System',
                               style: AppTypography.bodyMedium.copyWith(
-                                color: Colors.white.withValues(alpha: 0.72),
+                                color: Colors.white.withValues(alpha: 0.92),
                                 height: 1.35,
-                                letterSpacing: 0.2,
+                                letterSpacing: 0.15,
+                                fontWeight: FontWeight.w500,
+                                shadows: const [
+                                  Shadow(
+                                    color: Color(0x59000000),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -275,48 +289,73 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             (_loaderOpacity.value * chromeFade).clamp(0.0, 1.0),
                         child: Column(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 12,
-                                  sigmaY: 12,
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 14,
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.22),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
                                   ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.18,
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 14,
+                                    sigmaY: 14,
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 22,
+                                      vertical: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.42,
+                                        ),
+                                        width: 1.5,
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.white.withValues(alpha: 0.22),
+                                          Colors.white.withValues(alpha: 0.12),
+                                        ],
                                       ),
                                     ),
-                                    color: Colors.white.withValues(alpha: 0.08),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CupertinoActivityIndicator(
-                                        radius: 10,
-                                        color: Colors.white.withValues(
-                                          alpha: 0.9,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        CupertinoActivityIndicator(
+                                          radius: 11,
+                                          color: Colors.white,
                                         ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Text(
-                                        l10n?.loading ?? 'Loading…',
-                                        style: AppTypography.labelLarge
-                                            .copyWith(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.88,
+                                        const SizedBox(width: 16),
+                                        Text(
+                                          l10n?.loading ?? 'Loading…',
+                                          style: AppTypography.labelLarge
+                                              .copyWith(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.2,
+                                            shadows: const [
+                                              Shadow(
+                                                color: Color(0x4D000000),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 1),
+                                              ),
+                                            ],
                                           ),
-                                          fontWeight: FontWeight.w600,
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -349,16 +388,34 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       Text(
                         'Versi ${AppStrings.appVersion}',
                         style: AppTypography.caption.copyWith(
-                          color: Colors.white.withValues(alpha: 0.45),
-                          letterSpacing: 0.3,
+                          color: Colors.white.withValues(alpha: 0.78),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                          shadows: const [
+                            Shadow(
+                              color: Color(0x66000000),
+                              blurRadius: 10,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         '© 2026 HRIS Mobile',
                         style: AppTypography.caption.copyWith(
-                          color: Colors.white.withValues(alpha: 0.35),
-                          fontSize: 11,
+                          color: Colors.white.withValues(alpha: 0.62),
+                          fontSize: 12,
+                          height: 1.25,
+                          fontWeight: FontWeight.w500,
+                          shadows: const [
+                            Shadow(
+                              color: Color(0x59000000),
+                              blurRadius: 8,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -374,42 +431,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildBackground() {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          _bgAsset,
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
-          errorBuilder: (context, error, stackTrace) {
-            return const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0F172A),
-                    Color(0xFF020617),
-                  ],
-                ),
-              ),
-            );
-          },
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF6FB1FC), Color(0xFFEAF3FF)],
         ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: 0.25),
-                Colors.black.withValues(alpha: 0.72),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

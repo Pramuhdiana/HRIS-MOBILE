@@ -20,8 +20,6 @@ class AnimatedOnboardingScreen extends ConsumerStatefulWidget {
 
 class _AnimatedOnboardingScreenState
     extends ConsumerState<AnimatedOnboardingScreen> {
-  static const _topBgAsset = 'assets/images/bg-login.jpg';
-
   final PageController pageController = PageController();
   int currentIndex = 0;
 
@@ -197,7 +195,6 @@ class _AnimatedOnboardingScreenState
       body: Stack(
         children: [
           _TopArcImageBackground(
-            asset: _topBgAsset,
             height: size.height / 1.35,
           ),
           // overlay curve halus (layer kedua)
@@ -323,11 +320,9 @@ class _AnimatedOnboardingScreenState
 
 class _TopArcImageBackground extends StatelessWidget {
   const _TopArcImageBackground({
-    required this.asset,
     required this.height,
   });
 
-  final String asset;
   final double height;
 
   @override
@@ -340,30 +335,24 @@ class _TopArcImageBackground extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              asset,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF0F172A), Color(0xFF020617)],
-                    ),
-                  ),
-                );
-              },
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6FB1FC), Color(0xFFBFDDFE)],
+                ),
+              ),
             ),
-            // Overlay gelap tipis agar area atas tetap kontras
+            // Overlay tipis agar tetap lembut
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.08),
-                    Colors.black.withValues(alpha: 0.32),
+                    Colors.white.withValues(alpha: 0.04),
+                    Colors.white.withValues(alpha: 0.16),
                   ],
                 ),
               ),

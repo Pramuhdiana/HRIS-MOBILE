@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../data/models/attendance_model.dart';
+import 'liquid_glass_card.dart';
 
 /// Attendance List Item Widget - Shows individual attendance record
 /// Based on POS Mobile Figma Template design
@@ -74,28 +75,17 @@ class AttendanceListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
+    return Padding(
+      padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingL,
         vertical: AppDimensions.paddingXS,
       ),
-      decoration: BoxDecoration(
-        color: _isToday
-            ? AppColors.primary.withOpacity(0.05)
-            : AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        border: _isToday
-            ? Border.all(color: AppColors.primary.withOpacity(0.3))
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Padding(
+      child: LiquidGlassCard(
+        borderRadius: AppDimensions.radiusM,
+        borderAlpha: _isToday ? 0.30 : 0.18,
+        topAlpha: _isToday ? 0.18 : 0.12,
+        bottomAlpha: 0.05,
+        shadowAlpha: 0.06,
         padding: const EdgeInsets.all(AppDimensions.paddingM),
         child: Row(
           children: [

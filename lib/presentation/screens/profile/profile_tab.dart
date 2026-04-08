@@ -6,11 +6,14 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/routes/app_router.dart';
+import '../../../core/layout/dashboard_tab_bottom_inset.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../widgets/language_switcher.dart';
 import '../../providers/app_providers.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_profile_snapshot_provider.dart';
+import '../../widgets/liquid_glass_card.dart';
+import '../../widgets/liquid_glass_scaffold.dart';
 
 /// Profile Tab - Shows user profile and settings
 /// Based on POS Mobile Figma Template design
@@ -22,26 +25,31 @@ class ProfileTab extends ConsumerWidget {
     final employee = MockDataProvider.sampleEmployee;
     final snapAsync = ref.watch(userProfileSnapshotProvider);
     final snap = snapAsync.valueOrNull ?? const UserProfileSnapshot();
-    final displayName =
-        snap.displayName ?? snap.email ?? employee.fullName;
+    final displayName = snap.displayName ?? snap.email ?? employee.fullName;
     final subtitlePrimary = snap.email != null
         ? snap.email!
         : '${employee.position} · ${employee.department}';
     final loginHint = snap.loginMethod == 'google'
         ? 'Login: Google${snap.backendSynced ? '' : ' (sesi lokal, API belum sync)'}'
         : snap.loginMethod != null
-            ? 'Login: ${snap.loginMethod}'
-            : employee.department;
+        ? 'Login: ${snap.loginMethod}'
+        : employee.department;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return LiquidGlassScaffold(
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: dashboardTabScrollBottomPadding(context),
+        ),
         child: Column(
           children: [
             // Profile Header
             Container(
               decoration: const BoxDecoration(
-                gradient: AppColors.primaryGradient,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6FB1FC), Color(0xFFBFDDFE)],
+                ),
               ),
               child: SafeArea(
                 child: Padding(
@@ -61,8 +69,8 @@ class ProfileTab extends ConsumerWidget {
                           ),
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: snap.photoUrl != null &&
-                                snap.photoUrl!.isNotEmpty
+                        child:
+                            snap.photoUrl != null && snap.photoUrl!.isNotEmpty
                             ? Image.network(
                                 snap.photoUrl!,
                                 fit: BoxFit.cover,
@@ -343,8 +351,6 @@ class ProfileTab extends ConsumerWidget {
                       label: const Text(AppStrings.logout),
                     ),
                   ),
-
-                  const SizedBox(height: AppDimensions.paddingXL),
                 ],
               ),
             ),
@@ -382,56 +388,48 @@ class ProfileTab extends ConsumerWidget {
     String value,
     BuildContext context,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.paddingM),
-      padding: const EdgeInsets.all(AppDimensions.paddingM),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingS),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingM),
+      child: LiquidGlassCard(
+        borderRadius: AppDimensions.radiusM,
+        padding: const EdgeInsets.all(AppDimensions.paddingM),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppDimensions.paddingS),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+              ),
+              child: Icon(
+                icon,
+                size: AppDimensions.iconS,
+                color: AppColors.primary,
+              ),
             ),
-            child: Icon(
-              icon,
-              size: AppDimensions.iconS,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: AppDimensions.paddingM),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+            const SizedBox(width: AppDimensions.paddingM),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: AppTypography.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: AppTypography.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -443,67 +441,62 @@ class ProfileTab extends ConsumerWidget {
     BuildContext context, {
     VoidCallback? onTap,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.paddingS),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingM),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingS),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: AppDimensions.iconS,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: AppDimensions.paddingM),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: AppTypography.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingS),
+      child: LiquidGlassCard(
+        borderRadius: AppDimensions.radiusM,
+        padding: EdgeInsets.zero,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+            child: Padding(
+              padding: const EdgeInsets.all(AppDimensions.paddingM),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppDimensions.paddingS),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusS,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                    ),
+                    child: Icon(
+                      icon,
+                      size: AppDimensions.iconS,
+                      color: AppColors.primary,
+                    ),
                   ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: AppDimensions.iconXS,
-                  color: AppColors.textLight,
-                ),
-              ],
+                  const SizedBox(width: AppDimensions.paddingM),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AppTypography.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: AppDimensions.iconXS,
+                    color: AppColors.textLight,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
