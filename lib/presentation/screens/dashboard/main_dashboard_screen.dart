@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/constants/app_strings.dart';
 // import '../../../core/constants/app_dimensions.dart'; // Not used in this file
 // import '../../../data/providers/mock_data_provider.dart'; // Not used in this file
 import 'home_tab.dart';
@@ -70,6 +69,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     const activeColor = Colors.white;
     final inactiveColor = colorScheme.onSurfaceVariant;
@@ -125,7 +125,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
               BottomBarItem(
                 inActiveItem: Icon(Icons.home_outlined, color: inactiveColor),
                 activeItem: Icon(Icons.home, color: activeColor),
-                itemLabel: AppStrings.home,
+                itemLabel: l10n.home,
               ),
               BottomBarItem(
                 inActiveItem: Icon(
@@ -133,7 +133,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
                   color: inactiveColor,
                 ),
                 activeItem: Icon(Icons.access_time, color: activeColor),
-                itemLabel: AppStrings.attendance,
+                itemLabel: l10n.attendance,
               ),
               BottomBarItem(
                 inActiveItem: Icon(
@@ -141,12 +141,12 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
                   color: inactiveColor,
                 ),
                 activeItem: Icon(Icons.event_note, color: activeColor),
-                itemLabel: AppStrings.leave,
+                itemLabel: l10n.leave,
               ),
               BottomBarItem(
                 inActiveItem: Icon(Icons.person_outline, color: inactiveColor),
                 activeItem: Icon(Icons.person, color: activeColor),
-                itemLabel: AppStrings.profile,
+                itemLabel: l10n.profile,
               ),
             ],
             onTap: (index) {

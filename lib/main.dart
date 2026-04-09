@@ -7,6 +7,8 @@ import 'core/themes/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/routes/app_router.dart';
 import 'presentation/providers/app_providers.dart';
+import 'presentation/widgets/app_refresh_configuration.dart';
+import 'presentation/widgets/global_api_debug_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +51,11 @@ class HRISMobileApp extends ConsumerWidget {
         Locale('id'), // Indonesian
       ],
       routerConfig: router,
+      builder: (context, child) {
+        return AppRefreshConfiguration(
+          child: GlobalApiDebugOverlay(child: child ?? const SizedBox.shrink()),
+        );
+      },
     );
   }
 }

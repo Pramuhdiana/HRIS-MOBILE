@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
@@ -9,290 +10,410 @@ import '../../../core/constants/app_dimensions.dart';
 import '../../../core/layout/dashboard_tab_bottom_inset.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../data/providers/mock_data_provider.dart';
+import '../../providers/profile_api_provider.dart';
 import '../../widgets/dashboard_card.dart';
 import '../../widgets/attendance_card.dart';
+import '../../widgets/app_smart_refresher.dart';
 import '../../widgets/glass/glass_card.dart';
 import '../../widgets/glass/dashboard_glass_style.dart';
 import '../../widgets/liquid_glass_scaffold.dart';
 
 /// Home Tab - Main dashboard with overview information
 /// Based on POS Mobile Figma Template design
-class HomeTab extends ConsumerWidget {
+class HomeTab extends ConsumerStatefulWidget {
   const HomeTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends ConsumerState<HomeTab> {
+  late final RefreshController _refreshController;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshController = RefreshController(initialRefresh: false);
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onRefresh() async {
+    ref.invalidate(profileApiProvider);
+    try {
+      await ref.read(profileApiProvider.future);
+      if (mounted) _refreshController.refreshCompleted();
+    } catch (_) {
+      if (mounted) _refreshController.refreshFailed();
+    }
+  }
+
+  String _initialsFromName(String name) {
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) {
+      final first = parts.first;
+      return first.length >= 2
+          ? first.substring(0, 2).toUpperCase()
+          : first.toUpperCase();
+    }
+    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final employee = MockDataProvider.sampleEmployee;
+    final profile = ref.watch(profileApiProvider).valueOrNull;
     final dashboardStats = MockDataProvider.dashboardStats;
     final currentAttendance = MockDataProvider.sampleAttendanceRecords.first;
     final topInset = MediaQuery.paddingOf(context).top;
+    final greetingName = (profile?.name?.trim().isNotEmpty ?? false)
+        ? profile!.name!.trim()
+        : employee.firstName;
+    final greetingTitle = <String>[
+      if (profile?.position?.trim().isNotEmpty ?? false)
+        profile!.position!.trim()
+      else
+        employee.position,
+      if (profile?.department?.trim().isNotEmpty ?? false)
+        profile!.department!.trim()
+      else
+        employee.department,
+    ].join(' • ');
+    final avatarUrl = profile?.photoUrl?.trim();
+    final avatarInitials = _initialsFromName(
+      (profile?.name?.trim().isNotEmpty ?? false)
+          ? profile!.name!.trim()
+          : employee.fullName,
+    );
 
     return LiquidGlassScaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 1));
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.only(
-            bottom: dashboardTabScrollBottomPadding(context),
+      body: AppSmartRefresher(
+        controller: _refreshController,
+        scrollController: _scrollController,
+        enablePullUp: false,
+        header: const WaterDropMaterialHeader(
+          backgroundColor: AppColors.primary,
+          color: Colors.white,
+          distance: 60,
+        ),
+        onRefresh: _onRefresh,
+        child: CustomScrollView(
+          controller: _scrollController,
+          primary: false,
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppDimensions.paddingL,
-                  topInset + AppDimensions.paddingM,
-                  AppDimensions.paddingL,
-                  0,
-                ),
-                child: GlassCard(
-                  borderRadius: AppDimensions.cardRadius,
-                  padding: const EdgeInsets.all(AppDimensions.paddingL),
-                  blurSigma: DashboardGlassStyle.blurSigma,
-                  borderWidth: DashboardGlassStyle.borderWidth,
-                  borderOpacity: DashboardGlassStyle.borderOpacity,
-                  overlayTopOpacity: DashboardGlassStyle.overlayTopOpacity,
-                  overlayBottomOpacity:
-                      DashboardGlassStyle.overlayBottomOpacity,
-                  shadowOpacity: DashboardGlassStyle.shadowOpacity,
-                  enableWaterRipple: true,
-                  enableShimmer: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${AppStrings.welcome},',
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                employee.firstName,
-                                style: AppTypography.h4.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: Stack(
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(
+                bottom: dashboardTabScrollBottomPadding(context),
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppDimensions.paddingL,
+                        topInset + AppDimensions.paddingM,
+                        AppDimensions.paddingL,
+                        0,
+                      ),
+                      child: GlassCard(
+                        borderRadius: AppDimensions.cardRadius,
+                        padding: const EdgeInsets.all(AppDimensions.paddingL),
+                        blurSigma: DashboardGlassStyle.blurSigma,
+                        borderWidth: DashboardGlassStyle.borderWidth,
+                        borderOpacity: DashboardGlassStyle.borderOpacity,
+                        overlayTopOpacity:
+                            DashboardGlassStyle.overlayTopOpacity,
+                        overlayBottomOpacity:
+                            DashboardGlassStyle.overlayBottomOpacity,
+                        shadowOpacity: DashboardGlassStyle.shadowOpacity,
+                        enableWaterRipple: true,
+                        enableShimmer: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      Icons.notifications_outlined,
-                                      size: AppDimensions.iconL,
-                                      color: AppColors.textPrimary,
+                                    Text(
+                                      '${AppStrings.welcome},',
+                                      style: AppTypography.bodyMedium.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                     ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        width: 12,
-                                        height: 12,
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.error,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '3',
-                                            style: AppTypography.caption
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.textOnPrimary,
-                                                  fontSize: 8,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                          ),
-                                        ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      greetingName,
+                                      style: AppTypography.h4.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Container(
-                                width: AppDimensions.avatarM,
-                                height: AppDimensions.avatarM,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.46),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.18),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    employee.initials,
-                                    style: AppTypography.labelLarge.copyWith(
-                                      color: AppColors.textPrimary,
-                                      fontWeight: FontWeight.bold,
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: Stack(
+                                        children: [
+                                          Icon(
+                                            Icons.notifications_outlined,
+                                            size: AppDimensions.iconL,
+                                            color: AppColors.textPrimary,
+                                          ),
+                                          Positioned(
+                                            right: 0,
+                                            top: 0,
+                                            child: Container(
+                                              width: 12,
+                                              height: 12,
+                                              decoration: const BoxDecoration(
+                                                color: AppColors.error,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '3',
+                                                  style: AppTypography.caption
+                                                      .copyWith(
+                                                        color: AppColors
+                                                            .textOnPrimary,
+                                                        fontSize: 8,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
+                                    Container(
+                                      width: AppDimensions.avatarM,
+                                      height: AppDimensions.avatarM,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.46,
+                                        ),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.18,
+                                          ),
+                                        ),
+                                      ),
+                                      clipBehavior: Clip.antiAlias,
+                                      child:
+                                          avatarUrl != null &&
+                                              avatarUrl.isNotEmpty
+                                          ? Image.network(
+                                              avatarUrl,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Center(
+                                                    child: Text(
+                                                      avatarInitials,
+                                                      style: AppTypography
+                                                          .labelLarge
+                                                          .copyWith(
+                                                            color: AppColors
+                                                                .textPrimary,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                    ),
+                                                  ),
+                                            )
+                                          : Center(
+                                              child: Text(
+                                                avatarInitials,
+                                                style: AppTypography.labelLarge
+                                                    .copyWith(
+                                                      color:
+                                                          AppColors.textPrimary,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppDimensions.paddingM),
+                            Text(
+                              greetingTitle,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppDimensions.paddingL,
+                        0,
+                        AppDimensions.paddingL,
+                        0,
+                      ),
+
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Quick Actions',
+                            style: AppTypography.h6.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          GlassCard(
+                            borderRadius: AppDimensions.cardRadius,
+                            padding: const EdgeInsets.all(
+                              AppDimensions.paddingL,
+                            ),
+                            blurSigma: DashboardGlassStyle.blurSigma,
+                            borderWidth: DashboardGlassStyle.borderWidth,
+                            borderOpacity: DashboardGlassStyle.borderOpacity,
+                            overlayTopOpacity:
+                                DashboardGlassStyle.overlayTopOpacity,
+                            overlayBottomOpacity:
+                                DashboardGlassStyle.overlayBottomOpacity,
+                            shadowOpacity: DashboardGlassStyle.shadowOpacity,
+                            enableWaterRipple: true,
+                            enableShimmer: true,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [const _DashboardIconScrollGrid()],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    // Today's Attendance Card
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: AttendanceCard(attendance: currentAttendance),
+                    ),
+
+                    const SizedBox(height: AppDimensions.paddingL),
+
+                    // Dashboard Statistics
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'This Month Overview',
+                            style: AppTypography.h6.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DashboardCard(
+                                  title: 'Present Days',
+                                  value: dashboardStats['thisMonthPresentDays']
+                                      .toString(),
+                                  icon: Icons.check_circle,
+                                  color: AppColors.success,
+                                ),
+                              ),
+                              const SizedBox(width: AppDimensions.paddingM),
+                              Expanded(
+                                child: DashboardCard(
+                                  title: 'Absent Days',
+                                  value: dashboardStats['thisMonthAbsentDays']
+                                      .toString(),
+                                  icon: Icons.cancel,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DashboardCard(
+                                  title: 'Late Days',
+                                  value: dashboardStats['thisMonthLateDays']
+                                      .toString(),
+                                  icon: Icons.schedule,
+                                  color: AppColors.warning,
+                                ),
+                              ),
+                              const SizedBox(width: AppDimensions.paddingM),
+                              Expanded(
+                                child: DashboardCard(
+                                  title: 'Overtime Hours',
+                                  value: '${dashboardStats['overtimeHours']}h',
+                                  icon: Icons.timer,
+                                  color: AppColors.info,
                                 ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppDimensions.paddingM),
-                      Text(
-                        '${employee.position} • ${employee.department}',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppDimensions.paddingL),
-
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  AppDimensions.paddingL,
-                  0,
-                  AppDimensions.paddingL,
-                  0,
-                ),
-
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Quick Actions',
-                      style: AppTypography.h6.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
                     ),
-                    const SizedBox(height: AppDimensions.paddingM),
-                    GlassCard(
-                      borderRadius: AppDimensions.cardRadius,
-                      padding: const EdgeInsets.all(AppDimensions.paddingL),
-                      blurSigma: DashboardGlassStyle.blurSigma,
-                      borderWidth: DashboardGlassStyle.borderWidth,
-                      borderOpacity: DashboardGlassStyle.borderOpacity,
-                      overlayTopOpacity: DashboardGlassStyle.overlayTopOpacity,
-                      overlayBottomOpacity:
-                          DashboardGlassStyle.overlayBottomOpacity,
-                      shadowOpacity: DashboardGlassStyle.shadowOpacity,
-                      enableWaterRipple: true,
-                      enableShimmer: true,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [const _DashboardIconScrollGrid()],
-                      ),
-                    ),
+
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: AppDimensions.paddingL,
+                    //   ),
+                    //   child: Align(
+                    //     alignment: Alignment.centerLeft,
+                    //     child: TextButton.icon(
+                    //       onPressed: () => context.push(AppRoutes.glassDemo),
+                    //       icon: const Icon(Icons.blur_on_outlined),
+                    //       label: const Text('Demo iOS glass (GlassCard)'),
+                    //     ),
+                    //   ),
+                    // ),
+                    const SizedBox(height: AppDimensions.paddingXL),
                   ],
                 ),
               ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              // Today's Attendance Card
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                child: AttendanceCard(attendance: currentAttendance),
-              ),
-
-              const SizedBox(height: AppDimensions.paddingL),
-
-              // Dashboard Statistics
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'This Month Overview',
-                      style: AppTypography.h6.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: AppDimensions.paddingM),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DashboardCard(
-                            title: 'Present Days',
-                            value: dashboardStats['thisMonthPresentDays']
-                                .toString(),
-                            icon: Icons.check_circle,
-                            color: AppColors.success,
-                          ),
-                        ),
-                        const SizedBox(width: AppDimensions.paddingM),
-                        Expanded(
-                          child: DashboardCard(
-                            title: 'Absent Days',
-                            value: dashboardStats['thisMonthAbsentDays']
-                                .toString(),
-                            icon: Icons.cancel,
-                            color: AppColors.error,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimensions.paddingM),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DashboardCard(
-                            title: 'Late Days',
-                            value: dashboardStats['thisMonthLateDays']
-                                .toString(),
-                            icon: Icons.schedule,
-                            color: AppColors.warning,
-                          ),
-                        ),
-                        const SizedBox(width: AppDimensions.paddingM),
-                        Expanded(
-                          child: DashboardCard(
-                            title: 'Overtime Hours',
-                            value: '${dashboardStats['overtimeHours']}h',
-                            icon: Icons.timer,
-                            color: AppColors.info,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(
-              //     horizontal: AppDimensions.paddingL,
-              //   ),
-              //   child: Align(
-              //     alignment: Alignment.centerLeft,
-              //     child: TextButton.icon(
-              //       onPressed: () => context.push(AppRoutes.glassDemo),
-              //       icon: const Icon(Icons.blur_on_outlined),
-              //       label: const Text('Demo iOS glass (GlassCard)'),
-              //     ),
-              //   ),
-              // ),
-              const SizedBox(height: AppDimensions.paddingXL),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

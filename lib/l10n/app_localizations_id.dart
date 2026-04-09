@@ -374,4 +374,190 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get english => 'Bahasa Inggris';
+
+  @override
+  String get profileYearsOfService => 'Masa Kerja';
+
+  @override
+  String get profileStatus => 'Status';
+
+  @override
+  String get profileOptions => 'Opsi';
+
+  @override
+  String get profileNotProvided => 'Tidak tersedia';
+
+  @override
+  String get profileManager => 'Manajer';
+
+  @override
+  String get profileRoleLabel => 'Peran';
+
+  @override
+  String get profileWorkLocation => 'Lokasi kerja';
+
+  @override
+  String get profileWorkSchedule => 'Jam kerja';
+
+  @override
+  String profileTeamCount(int count) {
+    return '$count rekan dalam tim';
+  }
+
+  @override
+  String profileLoginWithMethod(String method) {
+    return 'Masuk: $method';
+  }
+
+  @override
+  String get profileLoginGoogleLocalNote => ' (sesi lokal, API belum sinkron)';
+
+  @override
+  String get profileChangePassword => 'Ubah Kata Sandi';
+
+  @override
+  String get profileEditProfileSubtitle => 'Perbarui informasi pribadi Anda';
+
+  @override
+  String get profileChangePasswordSubtitle => 'Perbarui kata sandi akun Anda';
+
+  @override
+  String get profileNotificationsSubtitle => 'Kelola preferensi notifikasi';
+
+  @override
+  String get profileViewOnboarding => 'Lihat Onboarding';
+
+  @override
+  String get profileViewOnboardingSubtitle => 'Uji layar onboarding lagi';
+
+  @override
+  String get profileSettingsSubtitle => 'Pengaturan aplikasi dan preferensi';
+
+  @override
+  String get profileHelpSupport => 'Bantuan & Dukungan';
+
+  @override
+  String get profileHelpSupportSubtitle =>
+      'Dapatkan bantuan dan hubungi dukungan';
+
+  @override
+  String get profileSnackEditComingSoon =>
+      'Fitur edit profil akan segera hadir';
+
+  @override
+  String get profileSnackPasswordComingSoon =>
+      'Fitur ubah kata sandi akan segera hadir';
+
+  @override
+  String get profileSnackNotificationsComingSoon =>
+      'Pengaturan notifikasi akan segera hadir';
+
+  @override
+  String get profileSnackSettingsComingSoon =>
+      'Fitur pengaturan akan segera hadir';
+
+  @override
+  String get profileSnackHelpComingSoon => 'Fitur bantuan akan segera hadir';
+
+  @override
+  String get profileLogoutConfirm => 'Apakah Anda yakin ingin keluar?';
+
+  @override
+  String profileErrorDetails(String details) {
+    return 'Kesalahan: $details';
+  }
+
+  @override
+  String get profileNameRequired => 'Nama wajib diisi';
+
+  @override
+  String get profileUpdateSuccess => 'Profil Anda telah diperbarui.';
+
+  @override
+  String get profileEditFormSubtitle =>
+      'Pastikan data kontak Anda selalu akurat.';
+
+  @override
+  String get profileSaving => 'Menyimpan…';
+
+  @override
+  String get profileEmailLockedHint => 'Email tidak dapat diubah';
+
+  @override
+  String get profileGender => 'Jenis kelamin';
+
+  @override
+  String get profileGenderMale => 'Laki-laki';
+
+  @override
+  String get profileGenderFemale => 'Perempuan';
+
+  @override
+  String get profileReligion => 'Agama';
+
+  @override
+  String get profileReligionIslam => 'Islam';
+
+  @override
+  String get profileReligionProtestant => 'Kristen';
+
+  @override
+  String get profileReligionCatholic => 'Katolik';
+
+  @override
+  String get profileReligionHindu => 'Hindu';
+
+  @override
+  String get profileReligionBuddhist => 'Buddha';
+
+  @override
+  String get profileReligionConfucian => 'Konghucu';
+
+  @override
+  String get profileReligionOther => 'Lainnya';
+
+  @override
+  String get profileBirthPlace => 'Tempat lahir';
+
+  @override
+  String get profileBirthDate => 'Tanggal lahir';
+
+  @override
+  String get profileDomicileAddress => 'Alamat domisili';
+
+  @override
+  String get profileKtpAddress => 'Alamat KTP';
+
+  @override
+  String get profileMaritalStatus => 'Status';
+
+  @override
+  String get profileMaritalSingle => 'Lajang';
+
+  @override
+  String get profileMaritalMarried => 'Menikah';
+
+  @override
+  String get profileChildrenCount => 'Jumlah anak';
+
+  @override
+  String get profileEmergencyContactName => 'Nama kontak darurat';
+
+  @override
+  String get profileEmergencyContactPhone => 'Nomor kontak darurat';
+
+  @override
+  String get profileSelectDate => 'Pilih tanggal';
+
+  @override
+  String get profileInvalidChildren => 'Masukkan angka valid (0 atau lebih)';
+
+  @override
+  String get profileSectionPersonal => 'Data pribadi';
+
+  @override
+  String get profileSectionContact => 'Kontak & alamat';
+
+  @override
+  String get profileBirthDateRequired => 'Pilih tanggal lahir Anda';
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_colors.dart';
+
 /// Reusable scaffold dengan background gradient Liquid Glass.
 class LiquidGlassScaffold extends StatelessWidget {
   const LiquidGlassScaffold({
@@ -20,7 +22,7 @@ class LiquidGlassScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.liquidGlassBackdrop,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
       extendBody: extendBody,

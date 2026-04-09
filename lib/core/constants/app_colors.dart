@@ -23,6 +23,10 @@ class AppColors {
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFFF1F3F4);
 
+  /// Selaras dengan ujung gradien [LiquidGlassScaffold]; dipakai agar overscroll
+  /// / pull-to-refresh tidak memunculkan putih Material yang kontras dengan gradien.
+  static const Color liquidGlassBackdrop = Color(0xFFEAF3FF);
+
   // Text Colors
   static const Color textPrimary = Color(0xFF212529);
   static const Color textSecondary = Color(0xFF6C757D);

@@ -5,6 +5,8 @@ import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/onboarding/animated_onboarding.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/dashboard/main_dashboard_screen.dart';
+import '../../presentation/screens/debug/api_logs_screen.dart';
+import '../../presentation/screens/profile/edit_profile_screen.dart';
 import '../../presentation/widgets/glass_card.dart';
 import '../../presentation/providers/app_providers.dart';
 import 'page_transitions.dart';
@@ -40,6 +42,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         final isSplash = state.matchedLocation == AppRoutes.splash;
         final isLogin = state.matchedLocation == AppRoutes.login;
         final isDashboard = state.matchedLocation == AppRoutes.dashboard;
+        final isEditProfile = state.matchedLocation == AppRoutes.editProfile;
+        final isApiLogs = state.matchedLocation == AppRoutes.apiLogs;
         final isGlassDemo = state.matchedLocation == AppRoutes.glassDemo;
 
         if (!isLoggedIn && isGlassDemo) {
@@ -54,7 +58,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return AppRoutes.dashboard;
         }
 
-        if (!isLoggedIn && isDashboard) {
+        if (!isLoggedIn && (isDashboard || isEditProfile || isApiLogs)) {
           return AppRoutes.login;
         }
 
@@ -115,6 +119,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.editProfile,
+        name: AppRoutes.editProfileName,
+        pageBuilder: (context, state) => PageTransitions.portalFadeIn(
+          state: state,
+          child: const EditProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.apiLogs,
+        name: AppRoutes.apiLogsName,
+        pageBuilder: (context, state) => PageTransitions.portalFadeIn(
+          state: state,
+          child: const ApiLogsScreen(),
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.glassDemo,
         name: AppRoutes.glassDemoName,
         pageBuilder: (context, state) => PageTransitions.fade(
@@ -148,6 +168,8 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String dashboard = '/dashboard';
+  static const String editProfile = '/edit-profile';
+  static const String apiLogs = '/api-logs';
   static const String glassDemo = '/glass-demo';
 
   // Route Names (for named navigation)
@@ -155,6 +177,8 @@ class AppRoutes {
   static const String onboardingName = 'onboarding';
   static const String loginName = 'login';
   static const String dashboardName = 'dashboard';
+  static const String editProfileName = 'edit-profile';
+  static const String apiLogsName = 'api-logs';
   static const String glassDemoName = 'glass-demo';
 
   /// `GoRouterState.extra` saat membuka dashboard setelah login sukses (untuk SnackBar di dashboard).

@@ -483,5 +483,174 @@
   "english": "English",
   "@english": {
     "description": "English language name"
-  }
+  },
+  "profileYearsOfService": "Years of Service",
+  "@profileYearsOfService": {
+    "description": "Profile stat label for tenure"
+  },
+  "profileStatus": "Status",
+  "@profileStatus": {
+    "description": "Profile stat label for employment status"
+  },
+  "profileOptions": "Options",
+  "@profileOptions": {
+    "description": "Profile section title for menu options"
+  },
+  "profileNotProvided": "Not provided",
+  "@profileNotProvided": {
+    "description": "Placeholder when phone or field is empty"
+  },
+  "profileManager": "Manager",
+  "@profileManager": {
+    "description": "Manager field label on profile"
+  },
+  "profileRoleLabel": "Role",
+  "@profileRoleLabel": {
+    "description": "HRIS role display name from API"
+  },
+  "profileWorkLocation": "Work location",
+  "@profileWorkLocation": {
+    "description": "Section title for office/site card"
+  },
+  "profileWorkSchedule": "Schedule",
+  "@profileWorkSchedule": {
+    "description": "Clock in/out hours label"
+  },
+  "profileTeamCount": "{count} people on your team",
+  "@profileTeamCount": {
+    "description": "Summary when API returns members list",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "profileLoginWithMethod": "Login: {method}",
+  "@profileLoginWithMethod": {
+    "description": "Shown under profile when login method is known",
+    "placeholders": {
+      "method": {
+        "type": "String",
+        "example": "Google"
+      }
+    }
+  },
+  "profileLoginGoogleLocalNote": " (local session, API not synced)",
+  "@profileLoginGoogleLocalNote": {
+    "description": "Suffix when Google login is local-only"
+  },
+  "profileChangePassword": "Change Password",
+  "@profileChangePassword": {
+    "description": "Change password menu title"
+  },
+  "profileEditProfileSubtitle": "Update your personal information",
+  "@profileEditProfileSubtitle": {
+    "description": "Edit profile menu subtitle"
+  },
+  "profileChangePasswordSubtitle": "Update your account password",
+  "@profileChangePasswordSubtitle": {
+    "description": "Change password menu subtitle"
+  },
+  "profileNotificationsSubtitle": "Manage notification preferences",
+  "@profileNotificationsSubtitle": {
+    "description": "Notifications menu subtitle"
+  },
+  "profileViewOnboarding": "View Onboarding",
+  "@profileViewOnboarding": {
+    "description": "Dev: replay onboarding"
+  },
+  "profileViewOnboardingSubtitle": "Test onboarding screens again",
+  "@profileViewOnboardingSubtitle": {
+    "description": "Dev: replay onboarding subtitle"
+  },
+  "profileSettingsSubtitle": "App settings and preferences",
+  "@profileSettingsSubtitle": {
+    "description": "Settings menu subtitle"
+  },
+  "profileHelpSupport": "Help & Support",
+  "@profileHelpSupport": {
+    "description": "Help menu title"
+  },
+  "profileHelpSupportSubtitle": "Get help and contact support",
+  "@profileHelpSupportSubtitle": {
+    "description": "Help menu subtitle"
+  },
+  "profileSnackEditComingSoon": "Edit profile feature coming soon",
+  "@profileSnackEditComingSoon": {
+    "description": "Snackbar for unfinished edit profile"
+  },
+  "profileSnackPasswordComingSoon": "Change password feature coming soon",
+  "@profileSnackPasswordComingSoon": {
+    "description": "Snackbar for unfinished change password"
+  },
+  "profileSnackNotificationsComingSoon": "Notification settings coming soon",
+  "@profileSnackNotificationsComingSoon": {
+    "description": "Snackbar for unfinished notifications"
+  },
+  "profileSnackSettingsComingSoon": "Settings feature coming soon",
+  "@profileSnackSettingsComingSoon": {
+    "description": "Snackbar for unfinished settings"
+  },
+  "profileSnackHelpComingSoon": "Help & support feature coming soon",
+  "@profileSnackHelpComingSoon": {
+    "description": "Snackbar for unfinished help"
+  },
+  "profileLogoutConfirm": "Are you sure you want to logout?",
+  "@profileLogoutConfirm": {
+    "description": "Logout confirmation dialog body"
+  },
+  "profileErrorDetails": "Error: {details}",
+  "@profileErrorDetails": {
+    "description": "Generic error with message",
+    "placeholders": {
+      "details": {
+        "type": "String",
+        "example": "Network"
+      }
+    }
+  },
+  "profileNameRequired": "Name is required",
+  "@profileNameRequired": {
+    "description": "Edit profile validation"
+  },
+  "profileUpdateSuccess": "Your profile has been updated.",
+  "@profileUpdateSuccess": {
+    "description": "After successful profile save"
+  },
+  "profileEditFormSubtitle": "Keep your contact details up to date.",
+  "@profileEditFormSubtitle": {
+    "description": "Under edit profile title"
+  },
+  "profileSaving": "Saving…",
+  "@profileSaving": {
+    "description": "Save button loading state"
+  },
+  "profileEmailLockedHint": "Email cannot be changed",
+  "profileGender": "Gender",
+  "profileGenderMale": "Male",
+  "profileGenderFemale": "Female",
+  "profileReligion": "Religion",
+  "profileReligionIslam": "Islam",
+  "profileReligionProtestant": "Protestant",
+  "profileReligionCatholic": "Catholic",
+  "profileReligionHindu": "Hindu",
+  "profileReligionBuddhist": "Buddhist",
+  "profileReligionConfucian": "Confucian",
+  "profileReligionOther": "Other",
+  "profileBirthPlace": "Place of birth",
+  "profileBirthDate": "Date of birth",
+  "profileDomicileAddress": "Domicile address",
+  "profileKtpAddress": "ID card address",
+  "profileMaritalStatus": "Marital status",
+  "profileMaritalSingle": "Single",
+  "profileMaritalMarried": "Married",
+  "profileChildrenCount": "Number of children",
+  "profileEmergencyContactName": "Emergency contact name",
+  "profileEmergencyContactPhone": "Emergency contact phone",
+  "profileSelectDate": "Select date",
+  "profileInvalidChildren": "Enter a valid number (0 or more)",
+  "profileSectionPersonal": "Personal data",
+  "profileSectionContact": "Contact & address",
+  "profileBirthDateRequired": "Please select your date of birth"
 }

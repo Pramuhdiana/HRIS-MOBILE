@@ -374,4 +374,186 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get profileYearsOfService => 'Years of Service';
+
+  @override
+  String get profileStatus => 'Status';
+
+  @override
+  String get profileOptions => 'Options';
+
+  @override
+  String get profileNotProvided => 'Not provided';
+
+  @override
+  String get profileManager => 'Manager';
+
+  @override
+  String get profileRoleLabel => 'Role';
+
+  @override
+  String get profileWorkLocation => 'Work location';
+
+  @override
+  String get profileWorkSchedule => 'Schedule';
+
+  @override
+  String profileTeamCount(int count) {
+    return '$count people on your team';
+  }
+
+  @override
+  String profileLoginWithMethod(String method) {
+    return 'Login: $method';
+  }
+
+  @override
+  String get profileLoginGoogleLocalNote => ' (local session, API not synced)';
+
+  @override
+  String get profileChangePassword => 'Change Password';
+
+  @override
+  String get profileEditProfileSubtitle => 'Update your personal information';
+
+  @override
+  String get profileChangePasswordSubtitle => 'Update your account password';
+
+  @override
+  String get profileNotificationsSubtitle => 'Manage notification preferences';
+
+  @override
+  String get profileViewOnboarding => 'View Onboarding';
+
+  @override
+  String get profileViewOnboardingSubtitle => 'Test onboarding screens again';
+
+  @override
+  String get profileSettingsSubtitle => 'App settings and preferences';
+
+  @override
+  String get profileHelpSupport => 'Help & Support';
+
+  @override
+  String get profileHelpSupportSubtitle => 'Get help and contact support';
+
+  @override
+  String get profileSnackEditComingSoon => 'Edit profile feature coming soon';
+
+  @override
+  String get profileSnackPasswordComingSoon =>
+      'Change password feature coming soon';
+
+  @override
+  String get profileSnackNotificationsComingSoon =>
+      'Notification settings coming soon';
+
+  @override
+  String get profileSnackSettingsComingSoon => 'Settings feature coming soon';
+
+  @override
+  String get profileSnackHelpComingSoon => 'Help & support feature coming soon';
+
+  @override
+  String get profileLogoutConfirm => 'Are you sure you want to logout?';
+
+  @override
+  String profileErrorDetails(String details) {
+    return 'Error: $details';
+  }
+
+  @override
+  String get profileNameRequired => 'Name is required';
+
+  @override
+  String get profileUpdateSuccess => 'Your profile has been updated.';
+
+  @override
+  String get profileEditFormSubtitle => 'Keep your contact details up to date.';
+
+  @override
+  String get profileSaving => 'Saving…';
+
+  @override
+  String get profileEmailLockedHint => 'Email cannot be changed';
+
+  @override
+  String get profileGender => 'Gender';
+
+  @override
+  String get profileGenderMale => 'Male';
+
+  @override
+  String get profileGenderFemale => 'Female';
+
+  @override
+  String get profileReligion => 'Religion';
+
+  @override
+  String get profileReligionIslam => 'Islam';
+
+  @override
+  String get profileReligionProtestant => 'Protestant';
+
+  @override
+  String get profileReligionCatholic => 'Catholic';
+
+  @override
+  String get profileReligionHindu => 'Hindu';
+
+  @override
+  String get profileReligionBuddhist => 'Buddhist';
+
+  @override
+  String get profileReligionConfucian => 'Confucian';
+
+  @override
+  String get profileReligionOther => 'Other';
+
+  @override
+  String get profileBirthPlace => 'Place of birth';
+
+  @override
+  String get profileBirthDate => 'Date of birth';
+
+  @override
+  String get profileDomicileAddress => 'Domicile address';
+
+  @override
+  String get profileKtpAddress => 'ID card address';
+
+  @override
+  String get profileMaritalStatus => 'Marital status';
+
+  @override
+  String get profileMaritalSingle => 'Single';
+
+  @override
+  String get profileMaritalMarried => 'Married';
+
+  @override
+  String get profileChildrenCount => 'Number of children';
+
+  @override
+  String get profileEmergencyContactName => 'Emergency contact name';
+
+  @override
+  String get profileEmergencyContactPhone => 'Emergency contact phone';
+
+  @override
+  String get profileSelectDate => 'Select date';
+
+  @override
+  String get profileInvalidChildren => 'Enter a valid number (0 or more)';
+
+  @override
+  String get profileSectionPersonal => 'Personal data';
+
+  @override
+  String get profileSectionContact => 'Contact & address';
+
+  @override
+  String get profileBirthDateRequired => 'Please select your date of birth';
 }

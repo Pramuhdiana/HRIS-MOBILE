@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../errors/failures.dart';
 import 'api_client.dart';
@@ -156,17 +158,28 @@ class ApiHelper {
 
     // If response is already a Map, return it
     if (responseData is Map<String, dynamic>) {
-      // Check if response has status field (API format)
-      if (responseData.containsKey('status')) {
+      // Support several backend conventions:
+      // - status: 1
+      // - status: 200
+      // - code: "00"
+      final hasStatus = responseData.containsKey('status');
+      final hasCode = responseData.containsKey('code');
+      if (hasStatus || hasCode) {
         final status = responseData['status'];
-        // Status 1 means success
-        if (status == 1) {
-          return responseData;
-        } else {
-          // Status != 1 means error
-          final errorMessage = responseData['message'] ?? 'Request failed';
-          throw ServerFailure(errorMessage);
-        }
+        final code = responseData['code']?.toString();
+        final isSuccess =
+            status == 1 ||
+            status == 200 ||
+            status == '1' ||
+            status == '200' ||
+            code == '00';
+        if (isSuccess) return responseData;
+
+        final errorMessage =
+            responseData['message']?.toString() ??
+            responseData['error']?.toString() ??
+            'Request failed';
+        throw ServerFailure(errorMessage);
       }
 
       // If no status field, assume success if status code is 2xx
@@ -183,18 +196,19 @@ class ApiHelper {
       // Server responded with error
       final statusCode = e.response!.statusCode;
       final responseData = e.response!.data;
-
-      // Try to extract error message from response
-      String errorMessage = 'Request failed';
-      if (responseData is Map<String, dynamic>) {
-        errorMessage =
-            responseData['message'] ??
-            responseData['error'] ??
-            responseData['data']?['message'] ??
-            'Request failed';
-      } else if (responseData is String) {
-        errorMessage = responseData;
-      }
+      final statusText = e.response!.statusMessage?.trim();
+      final requestMethod = e.requestOptions.method;
+      final requestUrl = '${e.requestOptions.baseUrl}${e.requestOptions.path}';
+      final humanMessage = _extractHumanErrorMessage(responseData);
+      final fullBody = _stringifyErrorBody(responseData);
+      final errorMessage = _composeDetailedErrorMessage(
+        statusCode: statusCode,
+        statusText: statusText,
+        requestMethod: requestMethod,
+        requestUrl: requestUrl,
+        humanMessage: humanMessage,
+        fullBody: fullBody,
+      );
 
       if (statusCode == 401) {
         return UnauthorizedFailure(errorMessage);
@@ -222,6 +236,71 @@ class ApiHelper {
       } else {
         return NetworkFailure('Network error: ${e.message}');
       }
+    }
+  }
+
+  String _composeDetailedErrorMessage({
+    required int? statusCode,
+    required String? statusText,
+    required String requestMethod,
+    required String requestUrl,
+    required String? humanMessage,
+    required String fullBody,
+  }) {
+    final code = statusCode?.toString() ?? 'unknown';
+    final status = (statusText != null && statusText.isNotEmpty)
+        ? statusText
+        : 'Request failed';
+    final head = 'HTTP $code $status';
+    final msg = (humanMessage != null && humanMessage.isNotEmpty)
+        ? humanMessage
+        : head;
+    // Selalu lampirkan request + body response agar sumber error jelas.
+    return '$msg\n$requestMethod $requestUrl\n\n$fullBody';
+  }
+
+  String? _extractHumanErrorMessage(dynamic responseData) {
+    if (responseData is Map) {
+      final map = Map<String, dynamic>.from(responseData);
+      final message = _asNonEmptyString(map['message']);
+      if (message != null) return message;
+
+      final error = map['error'];
+      final errorStr = _asNonEmptyString(error);
+      if (errorStr != null) return errorStr;
+      if (error is Map) {
+        final nested = _asNonEmptyString(error['message']);
+        if (nested != null) return nested;
+      }
+
+      final data = map['data'];
+      if (data is Map) {
+        final nested = _asNonEmptyString(data['message']);
+        if (nested != null) return nested;
+      }
+    } else if (responseData is String) {
+      final t = responseData.trim();
+      if (t.isNotEmpty) return t;
+    }
+    return null;
+  }
+
+  String? _asNonEmptyString(dynamic value) {
+    if (value == null) return null;
+    final s = value.toString().trim();
+    return s.isEmpty ? null : s;
+  }
+
+  String _stringifyErrorBody(dynamic responseData) {
+    if (responseData == null) return '{}';
+    if (responseData is String) return responseData;
+    try {
+      if (responseData is Map || responseData is List) {
+        return const JsonEncoder.withIndent('  ').convert(responseData);
+      }
+      return responseData.toString();
+    } catch (_) {
+      return responseData.toString();
     }
   }
 }

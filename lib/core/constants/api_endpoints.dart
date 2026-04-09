@@ -13,8 +13,10 @@ class ApiEndpoints {
   static const String resetPassword = '/ms-auth/api/auth/reset-password';
 
   // User Endpoints
-  static const String userProfile = '/ms-user/api/user/profile';
-  static const String updateProfile = '/ms-user/api/user/profile';
+  /// GET `/profile` — untuk data lengkap gunakan query `type=detail` (lihat [ProfileDataSource.getProfile]).
+  static const String userProfile = '/ms-user/api/profile';
+  // Update profile pakai endpoint yang sama dengan GET profile (method POST).
+  static const String updateProfile = '/ms-user/api/profile';
   static const String changePassword = '/ms-user/api/user/change-password';
 
   // Employee Endpoints

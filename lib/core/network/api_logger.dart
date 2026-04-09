@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'api_log_store.dart';
 
 /// API Logger Interceptor
 /// Logs all API requests and responses for debugging
@@ -90,6 +91,20 @@ class ApiLoggerInterceptor extends Interceptor {
     debugPrint('   ${_formatJson(response.data)}');
     debugPrint('═══════════════════════════════════════════════════════════');
 
+    final ro = response.requestOptions;
+    ApiLogStore.instance.add(
+      ApiLogEntry(
+        type: ApiLogType.response,
+        timestamp: DateTime.now(),
+        method: ro.method,
+        url: '${ro.baseUrl}${ro.path}',
+        queryParameters: _formatQueryParameters(ro.queryParameters),
+        statusCode: response.statusCode,
+        responseHeaders: _formatJson(response.headers.map),
+        responseBody: _formatJson(response.data),
+      ),
+    );
+
     handler.next(response);
   }
 
@@ -125,7 +140,36 @@ class ApiLoggerInterceptor extends Interceptor {
 
     debugPrint('═══════════════════════════════════════════════════════════');
 
+    final ro = err.requestOptions;
+    ApiLogStore.instance.add(
+      ApiLogEntry(
+        type: ApiLogType.error,
+        timestamp: DateTime.now(),
+        method: ro.method,
+        url: '${ro.baseUrl}${ro.path}',
+        queryParameters: _formatQueryParameters(ro.queryParameters),
+        statusCode: err.response?.statusCode,
+        message: '${err.type}: ${err.message}',
+        requestBody: err.requestOptions.data == null
+            ? null
+            : _formatJson(err.requestOptions.data),
+        responseBody: err.response?.data == null
+            ? null
+            : _formatJson(err.response!.data),
+      ),
+    );
+
     handler.next(err);
+  }
+
+  String? _formatQueryParameters(Map<String, dynamic> query) {
+    if (query.isEmpty) return null;
+    try {
+      final encoder = const JsonEncoder.withIndent('  ');
+      return encoder.convert(query);
+    } catch (_) {
+      return query.entries.map((e) => '${e.key}=${e.value}').join('&');
+    }
   }
 
   /// Format JSON for better readability

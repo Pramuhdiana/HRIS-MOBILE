@@ -823,6 +823,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get english;
+
+  /// Profile stat label for tenure
+  ///
+  /// In en, this message translates to:
+  /// **'Years of Service'**
+  String get profileYearsOfService;
+
+  /// Profile stat label for employment status
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get profileStatus;
+
+  /// Profile section title for menu options
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get profileOptions;
+
+  /// Placeholder when phone or field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get profileNotProvided;
+
+  /// Manager field label on profile
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get profileManager;
+
+  /// HRIS role display name from API
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get profileRoleLabel;
+
+  /// Section title for office/site card
+  ///
+  /// In en, this message translates to:
+  /// **'Work location'**
+  String get profileWorkLocation;
+
+  /// Clock in/out hours label
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get profileWorkSchedule;
+
+  /// Summary when API returns members list
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people on your team'**
+  String profileTeamCount(int count);
+
+  /// Shown under profile when login method is known
+  ///
+  /// In en, this message translates to:
+  /// **'Login: {method}'**
+  String profileLoginWithMethod(String method);
+
+  /// Suffix when Google login is local-only
+  ///
+  /// In en, this message translates to:
+  /// **' (local session, API not synced)'**
+  String get profileLoginGoogleLocalNote;
+
+  /// Change password menu title
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get profileChangePassword;
+
+  /// Edit profile menu subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Update your personal information'**
+  String get profileEditProfileSubtitle;
+
+  /// Change password menu subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Update your account password'**
+  String get profileChangePasswordSubtitle;
+
+  /// Notifications menu subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Manage notification preferences'**
+  String get profileNotificationsSubtitle;
+
+  /// Dev: replay onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'View Onboarding'**
+  String get profileViewOnboarding;
+
+  /// Dev: replay onboarding subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Test onboarding screens again'**
+  String get profileViewOnboardingSubtitle;
+
+  /// Settings menu subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'App settings and preferences'**
+  String get profileSettingsSubtitle;
+
+  /// Help menu title
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get profileHelpSupport;
+
+  /// Help menu subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Get help and contact support'**
+  String get profileHelpSupportSubtitle;
+
+  /// Snackbar for unfinished edit profile
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile feature coming soon'**
+  String get profileSnackEditComingSoon;
+
+  /// Snackbar for unfinished change password
+  ///
+  /// In en, this message translates to:
+  /// **'Change password feature coming soon'**
+  String get profileSnackPasswordComingSoon;
+
+  /// Snackbar for unfinished notifications
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings coming soon'**
+  String get profileSnackNotificationsComingSoon;
+
+  /// Snackbar for unfinished settings
+  ///
+  /// In en, this message translates to:
+  /// **'Settings feature coming soon'**
+  String get profileSnackSettingsComingSoon;
+
+  /// Snackbar for unfinished help
+  ///
+  /// In en, this message translates to:
+  /// **'Help & support feature coming soon'**
+  String get profileSnackHelpComingSoon;
+
+  /// Logout confirmation dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get profileLogoutConfirm;
+
+  /// Generic error with message
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {details}'**
+  String profileErrorDetails(String details);
+
+  /// Edit profile validation
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get profileNameRequired;
+
+  /// After successful profile save
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile has been updated.'**
+  String get profileUpdateSuccess;
+
+  /// Under edit profile title
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your contact details up to date.'**
+  String get profileEditFormSubtitle;
+
+  /// Save button loading state
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get profileSaving;
+
+  /// No description provided for @profileEmailLockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email cannot be changed'**
+  String get profileEmailLockedHint;
+
+  /// No description provided for @profileGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get profileGender;
+
+  /// No description provided for @profileGenderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get profileGenderMale;
+
+  /// No description provided for @profileGenderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get profileGenderFemale;
+
+  /// No description provided for @profileReligion.
+  ///
+  /// In en, this message translates to:
+  /// **'Religion'**
+  String get profileReligion;
+
+  /// No description provided for @profileReligionIslam.
+  ///
+  /// In en, this message translates to:
+  /// **'Islam'**
+  String get profileReligionIslam;
+
+  /// No description provided for @profileReligionProtestant.
+  ///
+  /// In en, this message translates to:
+  /// **'Protestant'**
+  String get profileReligionProtestant;
+
+  /// No description provided for @profileReligionCatholic.
+  ///
+  /// In en, this message translates to:
+  /// **'Catholic'**
+  String get profileReligionCatholic;
+
+  /// No description provided for @profileReligionHindu.
+  ///
+  /// In en, this message translates to:
+  /// **'Hindu'**
+  String get profileReligionHindu;
+
+  /// No description provided for @profileReligionBuddhist.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddhist'**
+  String get profileReligionBuddhist;
+
+  /// No description provided for @profileReligionConfucian.
+  ///
+  /// In en, this message translates to:
+  /// **'Confucian'**
+  String get profileReligionConfucian;
+
+  /// No description provided for @profileReligionOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get profileReligionOther;
+
+  /// No description provided for @profileBirthPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Place of birth'**
+  String get profileBirthPlace;
+
+  /// No description provided for @profileBirthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get profileBirthDate;
+
+  /// No description provided for @profileDomicileAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Domicile address'**
+  String get profileDomicileAddress;
+
+  /// No description provided for @profileKtpAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'ID card address'**
+  String get profileKtpAddress;
+
+  /// No description provided for @profileMaritalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Marital status'**
+  String get profileMaritalStatus;
+
+  /// No description provided for @profileMaritalSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single'**
+  String get profileMaritalSingle;
+
+  /// No description provided for @profileMaritalMarried.
+  ///
+  /// In en, this message translates to:
+  /// **'Married'**
+  String get profileMaritalMarried;
+
+  /// No description provided for @profileChildrenCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of children'**
+  String get profileChildrenCount;
+
+  /// No description provided for @profileEmergencyContactName.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact name'**
+  String get profileEmergencyContactName;
+
+  /// No description provided for @profileEmergencyContactPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact phone'**
+  String get profileEmergencyContactPhone;
+
+  /// No description provided for @profileSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get profileSelectDate;
+
+  /// No description provided for @profileInvalidChildren.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number (0 or more)'**
+  String get profileInvalidChildren;
+
+  /// No description provided for @profileSectionPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal data'**
+  String get profileSectionPersonal;
+
+  /// No description provided for @profileSectionContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact & address'**
+  String get profileSectionContact;
+
+  /// No description provided for @profileBirthDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your date of birth'**
+  String get profileBirthDateRequired;
 }
 
 class _AppLocalizationsDelegate

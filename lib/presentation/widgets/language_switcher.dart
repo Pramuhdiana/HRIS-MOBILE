@@ -101,7 +101,6 @@ class LanguageSwitcher extends ConsumerWidget {
           children: [
             RadioListTile<Locale>(
               title: Text(l10n.indonesian),
-              subtitle: const Text('Indonesian'),
               value: const Locale('id'),
               groupValue: currentLocale,
               onChanged: (value) {
@@ -113,7 +112,6 @@ class LanguageSwitcher extends ConsumerWidget {
             ),
             RadioListTile<Locale>(
               title: Text(l10n.english),
-              subtitle: const Text('English'),
               value: const Locale('en'),
               groupValue: currentLocale,
               onChanged: (value) {
