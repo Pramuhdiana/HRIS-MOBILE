@@ -6,6 +6,21 @@ import 'liquid_glass_toast.dart';
 /// SnackBar Helper
 /// Reusable helper for showing awesome snackbars throughout the app
 class SnackBarHelper {
+  /// Template sukses umum setelah data berhasil disimpan.
+  static void showDataSavedSuccess(BuildContext context) {
+    showSuccess(context, title: 'Berhasil', message: 'Data berhasil disimpan.');
+  }
+
+  /// Template info umum untuk fitur yang belum tersedia.
+  static void showComingSoon(BuildContext context, {required String feature}) {
+    showInfo(context, title: 'Info', message: '$feature coming soon');
+  }
+
+  /// Template sukses untuk aksi salin ke clipboard.
+  static void showCopied(BuildContext context, {String message = 'Copied'}) {
+    showSuccess(context, title: 'Copied', message: message);
+  }
+
   /// Show success snackbar
   static void showSuccess(
     BuildContext context, {

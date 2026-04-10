@@ -35,6 +35,7 @@ class DashboardCard extends StatelessWidget {
       overlayTopOpacity: DashboardGlassStyle.overlayTopOpacity,
       overlayBottomOpacity: DashboardGlassStyle.overlayBottomOpacity,
       shadowOpacity: DashboardGlassStyle.shadowOpacity,
+      enableBackdropBlur: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -50,11 +51,7 @@ class DashboardCard extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.18),
                   ),
                 ),
-                child: Icon(
-                  icon,
-                  size: AppDimensions.iconM,
-                  color: color,
-                ),
+                child: Icon(icon, size: AppDimensions.iconM, color: color),
               ),
               if (onTap != null)
                 Icon(

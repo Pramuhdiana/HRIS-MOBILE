@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/layout/dashboard_tab_bottom_inset.dart';
+import '../../../core/utils/snackbar_helper.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../../data/models/attendance_model.dart';
 import '../../widgets/attendance_list_item.dart';
@@ -57,9 +58,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
         actions: [
           IconButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Filter feature coming soon')),
-              );
+              SnackBarHelper.showComingSoon(context, feature: 'Filter');
             },
             icon: const Icon(Icons.filter_list),
           ),
@@ -145,10 +144,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Clock out coming soon'),
-                              ),
+                            SnackBarHelper.showComingSoon(
+                              context,
+                              feature: 'Clock out',
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -190,10 +188,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                       ),
                       TextButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('View all coming soon'),
-                            ),
+                          SnackBarHelper.showComingSoon(
+                            context,
+                            feature: 'View all',
                           );
                         },
                         child: const Text('View All'),

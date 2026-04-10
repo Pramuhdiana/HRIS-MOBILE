@@ -10,12 +10,14 @@ class ApiClient {
   late final Dio _dio;
   CompanyContext? _currentCompany;
   String? _authToken;
+  void Function()? _onUnauthorized;
 
   ApiClient({
     String? baseUrl,
     CompanyContext? companyContext,
     String? authToken,
-  }) {
+    void Function()? onUnauthorized,
+  }) : _onUnauthorized = onUnauthorized {
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl ?? ApiEndpoints.baseUrl,
@@ -32,6 +34,20 @@ class ApiClient {
     _authToken = authToken;
 
     _setupInterceptors();
+  }
+
+  /// Dipanggil dari root app ([main]) agar tidak ada import siklus ke [AuthNotifier].
+  void setOnUnauthorized(void Function()? callback) {
+    _onUnauthorized = callback;
+  }
+
+  bool _isUnauthorizedExemptPath(String path) {
+    return path == ApiEndpoints.login ||
+        path == ApiEndpoints.loginGoogle ||
+        path == ApiEndpoints.logout ||
+        path == ApiEndpoints.forgotPassword ||
+        path == ApiEndpoints.resetPassword ||
+        path == ApiEndpoints.refreshToken;
   }
 
   void _setupInterceptors() {
@@ -57,7 +73,13 @@ class ApiClient {
           return handler.next(options);
         },
         onError: (error, handler) {
-          // Handle errors globally
+          final status = error.response?.statusCode;
+          final path = error.requestOptions.path;
+          if (status == 401 &&
+              !_isUnauthorizedExemptPath(path) &&
+              _authToken != null) {
+            _onUnauthorized?.call();
+          }
           return handler.next(error);
         },
       ),

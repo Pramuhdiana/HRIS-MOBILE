@@ -124,6 +124,36 @@ class AuthNotifier extends StateNotifier<LoginState> {
     }
   }
 
+  bool _clearingUnauthorizedSession = false;
+
+  /// Hanya bersihkan sesi lokal (tanpa panggil API logout). Dipakai saat token tidak valid / 401.
+  Future<void> _clearLocalSessionOnly() async {
+    state = const LoginState();
+    _ref.read(authTokenProvider.notifier).state = null;
+    _ref.read(apiClientProvider).updateAuthToken(null);
+    _ref.read(apiClientProvider).clearCompanyContext();
+    _ref.read(companyContextProvider.notifier).clearCompany();
+
+    final prefs = _ref.read(sharedPreferencesProvider);
+    await prefs.remove('auth_token');
+    await prefs.remove('user_email');
+    await prefs.remove('login_method');
+    await _ref.read(googleLoginLocalStorageProvider).markRevokedAtNow();
+  }
+
+  /// HTTP 401 pada endpoint terautentikasi: tandai dialog di login, lalu keluar lokal.
+  Future<void> clearSessionDueToUnauthorized() async {
+    if (_clearingUnauthorizedSession) return;
+    if (_ref.read(authTokenProvider) == null) return;
+    _clearingUnauthorizedSession = true;
+    try {
+      _ref.read(sessionExpiredNoticeProvider.notifier).state = true;
+      await _clearLocalSessionOnly();
+    } finally {
+      _clearingUnauthorizedSession = false;
+    }
+  }
+
   /// Logout: hit server then clear session (local clear still runs if API fails).
   Future<void> logout() async {
     try {
@@ -131,17 +161,7 @@ class AuthNotifier extends StateNotifier<LoginState> {
     } catch (_) {
       // Sessi lokal tetap ditutup walau jaringan / server gagal.
     } finally {
-      state = const LoginState();
-      _ref.read(authTokenProvider.notifier).state = null;
-      _ref.read(apiClientProvider).updateAuthToken(null);
-      _ref.read(apiClientProvider).clearCompanyContext();
-      _ref.read(companyContextProvider.notifier).clearCompany();
-
-      final prefs = _ref.read(sharedPreferencesProvider);
-      await prefs.remove('auth_token');
-      await prefs.remove('user_email');
-      await prefs.remove('login_method');
-      await _ref.read(googleLoginLocalStorageProvider).markRevokedAtNow();
+      await _clearLocalSessionOnly();
     }
   }
 

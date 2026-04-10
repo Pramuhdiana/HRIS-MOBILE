@@ -188,6 +188,7 @@ class _AnimatedOnboardingScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final items = _getOnboardingItems(l10n);
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -290,7 +291,7 @@ class _AnimatedOnboardingScreenState
                     currentIndex == items.length - 1
                         ? Icons.check_circle
                         : Icons.arrow_forward_ios,
-                    color: AppColors.primary,
+                      color: AppColors.primary,
                     size: 28,
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/onboarding/animated_onboarding.dart';
 import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/auth/session_expired_screen.dart';
 import '../../presentation/screens/dashboard/main_dashboard_screen.dart';
 import '../../presentation/screens/debug/api_logs_screen.dart';
 import '../../presentation/screens/profile/edit_profile_screen.dart';
@@ -17,6 +18,7 @@ class GoRouterRefresh extends ChangeNotifier {
   GoRouterRefresh(this._ref) {
     _ref.listen(authTokenProvider, (_, __) => notifyListeners());
     _ref.listen(hasSeenOnboardingProvider, (_, __) => notifyListeners());
+    _ref.listen(sessionExpiredNoticeProvider, (_, __) => notifyListeners());
   }
 
   final Ref _ref;
@@ -35,16 +37,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   String? redirect(BuildContext context, GoRouterState state) {
     final hasSeenOnboardingAsync = ref.read(hasSeenOnboardingProvider);
     final isLoggedIn = ref.read(authTokenProvider) != null;
+    final isSessionExpired = ref.read(sessionExpiredNoticeProvider);
 
     return hasSeenOnboardingAsync.when(
       data: (seen) {
         final isOnboarding = state.matchedLocation == AppRoutes.onboarding;
         final isSplash = state.matchedLocation == AppRoutes.splash;
         final isLogin = state.matchedLocation == AppRoutes.login;
+        final isSessionExpiredPage =
+            state.matchedLocation == AppRoutes.sessionExpired;
         final isDashboard = state.matchedLocation == AppRoutes.dashboard;
         final isEditProfile = state.matchedLocation == AppRoutes.editProfile;
         final isApiLogs = state.matchedLocation == AppRoutes.apiLogs;
         final isGlassDemo = state.matchedLocation == AppRoutes.glassDemo;
+
+        if (isSessionExpired && !isSessionExpiredPage) {
+          return AppRoutes.sessionExpired;
+        }
+
+        if (!isSessionExpired && isSessionExpiredPage) {
+          return isLoggedIn ? AppRoutes.dashboard : AppRoutes.login;
+        }
 
         if (!isLoggedIn && isGlassDemo) {
           return AppRoutes.login;
@@ -58,7 +71,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return AppRoutes.dashboard;
         }
 
-        if (!isLoggedIn && (isDashboard || isEditProfile || isApiLogs)) {
+        if (!isLoggedIn &&
+            (isDashboard || isEditProfile || isApiLogs) &&
+            !isSessionExpiredPage) {
           return AppRoutes.login;
         }
 
@@ -108,6 +123,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => PageTransitions.portalFadeIn(
           state: state,
           child: const LoginScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.sessionExpired,
+        name: AppRoutes.sessionExpiredName,
+        pageBuilder: (context, state) => PageTransitions.portalFadeIn(
+          state: state,
+          child: const SessionExpiredScreen(),
         ),
       ),
       GoRoute(
@@ -167,6 +190,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String sessionExpired = '/session-expired';
   static const String dashboard = '/dashboard';
   static const String editProfile = '/edit-profile';
   static const String apiLogs = '/api-logs';
@@ -176,6 +200,7 @@ class AppRoutes {
   static const String splashName = 'splash';
   static const String onboardingName = 'onboarding';
   static const String loginName = 'login';
+  static const String sessionExpiredName = 'session-expired';
   static const String dashboardName = 'dashboard';
   static const String editProfileName = 'edit-profile';
   static const String apiLogsName = 'api-logs';

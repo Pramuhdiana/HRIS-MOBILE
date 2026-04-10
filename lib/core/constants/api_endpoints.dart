@@ -17,6 +17,7 @@ class ApiEndpoints {
   static const String userProfile = '/ms-user/api/profile';
   // Update profile pakai endpoint yang sama dengan GET profile (method POST).
   static const String updateProfile = '/ms-user/api/profile';
+  static const String updateProfilePhoto = '/ms-user/api/profile/photo';
   static const String changePassword = '/ms-user/api/user/change-password';
 
   // Employee Endpoints

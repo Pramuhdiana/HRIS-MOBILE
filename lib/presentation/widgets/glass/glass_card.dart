@@ -14,6 +14,8 @@ class GlassCard extends StatefulWidget {
     this.borderRadius = 20,
     this.padding = const EdgeInsets.all(16),
     this.blurSigma = 22,
+    this.enableBackdropBlur = true,
+    this.disabledBackdropBlurSigma = 2.5,
     this.overlayTopOpacity = 0.008,
     this.overlayBottomOpacity = 0.0,
     this.borderWidth = 2,
@@ -34,7 +36,8 @@ class GlassCard extends StatefulWidget {
     this.waterRippleDuration = const Duration(milliseconds: 1400),
     this.pressForwardDuration = const Duration(milliseconds: 165),
     this.pressReverseDuration = const Duration(milliseconds: 580),
-  }) : assert(blurSigma >= 20 && blurSigma <= 30),
+  }) : assert(!enableBackdropBlur || (blurSigma >= 8 && blurSigma <= 30)),
+       assert(disabledBackdropBlurSigma >= 0 && disabledBackdropBlurSigma <= 8),
        assert(borderWidth >= 1 && borderWidth <= 3),
        assert(overlayTopOpacity <= 0.06),
        assert(overlayBottomOpacity <= 0.06),
@@ -48,11 +51,14 @@ class GlassCard extends StatefulWidget {
   final double borderRadius;
   final EdgeInsetsGeometry padding;
   final double blurSigma;
+  final bool enableBackdropBlur;
+  final double disabledBackdropBlurSigma;
   final double overlayTopOpacity;
   final double overlayBottomOpacity;
   final double borderWidth;
   final double borderOpacity;
   final double shadowOpacity;
+
   /// Riak Material; default **tanpa splash** ([NoSplash]). Set jika perlu riak berwarna.
   final Color? splashColor;
   final Color? highlightColor;
@@ -74,8 +80,7 @@ class GlassCard extends StatefulWidget {
   State<GlassCard> createState() => _GlassCardState();
 }
 
-class _GlassCardState extends State<GlassCard>
-    with TickerProviderStateMixin {
+class _GlassCardState extends State<GlassCard> with TickerProviderStateMixin {
   late final AnimationController _pressCtrl;
   late final AnimationController _shimmerCtrl;
   late Animation<double> _scaleAnim;
@@ -162,8 +167,7 @@ class _GlassCardState extends State<GlassCard>
     final ripple = WaterRipple(
       position: position,
       controller: controller,
-      color: widget.waterRippleColor ??
-          Colors.white.withValues(alpha: 0.48),
+      color: widget.waterRippleColor ?? Colors.white.withValues(alpha: 0.48),
     );
 
     setState(() {
@@ -217,6 +221,9 @@ class _GlassCardState extends State<GlassCard>
         : Colors.white;
     final inkHighlight = widget.highlightColor ?? Colors.transparent;
     final useCustomSplash = widget.splashColor != null;
+    final effectiveBackdropSigma = widget.enableBackdropBlur
+        ? widget.blurSigma
+        : widget.disabledBackdropBlurSigma;
 
     final glassBody = ClipRRect(
       borderRadius: r,
@@ -224,15 +231,17 @@ class _GlassCardState extends State<GlassCard>
       child: Stack(
         fit: StackFit.passthrough,
         children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: widget.blurSigma,
-                sigmaY: widget.blurSigma,
+          if (effectiveBackdropSigma > 0)
+            Positioned.fill(
+              child: BackdropFilter(
+                blendMode: BlendMode.src,
+                filter: ImageFilter.blur(
+                  sigmaX: effectiveBackdropSigma,
+                  sigmaY: effectiveBackdropSigma,
+                ),
+                child: const SizedBox.expand(),
               ),
-              child: const SizedBox.expand(),
             ),
-          ),
           Positioned.fill(
             child: IgnorePointer(
               child: DecoratedBox(
@@ -247,14 +256,16 @@ class _GlassCardState extends State<GlassCard>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.white.withValues(alpha: widget.overlayTopOpacity),
                       Colors.white.withValues(
-                        alpha:
-                            widget.overlayTopOpacity * 0.35 +
-                            widget.overlayBottomOpacity * 0.65,
+                        alpha: widget.overlayTopOpacity * 0.42,
                       ),
                       Colors.white.withValues(
-                        alpha: widget.overlayBottomOpacity,
+                        alpha:
+                            widget.overlayTopOpacity * 0.2 +
+                            widget.overlayBottomOpacity * 0.45,
+                      ),
+                      Colors.white.withValues(
+                        alpha: widget.overlayBottomOpacity * 0.6,
                       ),
                     ],
                     stops: const [0.0, 0.55, 1.0],
@@ -392,13 +403,9 @@ class _GlassCardState extends State<GlassCard>
         return AnimatedBuilder(
           animation: _scaleAnim,
           builder: (context, child) {
-            final s =
-                _scaleAnim.value.clamp(widget.pressScale, 1.08);
+            final s = _scaleAnim.value.clamp(widget.pressScale, 1.08);
             final denom = (1.0 - widget.pressScale).clamp(0.001, 1.0);
-            final depth = ((1.0 - s) / denom).clamp(
-              0.0,
-              1.35,
-            );
+            final depth = ((1.0 - s) / denom).clamp(0.0, 1.35);
             final slide =
                 Offset(_focal.x, _focal.y) * widget.pressSlidePixels * depth;
 

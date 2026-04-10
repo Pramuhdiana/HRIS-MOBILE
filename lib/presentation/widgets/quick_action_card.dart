@@ -35,6 +35,7 @@ class QuickActionCard extends StatelessWidget {
       overlayTopOpacity: DashboardGlassStyle.overlayTopOpacity,
       overlayBottomOpacity: DashboardGlassStyle.overlayBottomOpacity,
       shadowOpacity: DashboardGlassStyle.shadowOpacity,
+      enableBackdropBlur: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -118,7 +118,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF050810),
+      backgroundColor: const Color(0xFF071229),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -141,7 +141,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             center: const Alignment(-0.75, -0.55),
                             radius: 1.15,
                             colors: [
-                              const Color(0xFF2563EB).withValues(alpha: 0.22),
+                              const Color(0xFF5FCFFF).withValues(alpha: 0.28),
                               Colors.transparent,
                             ],
                           ),
@@ -156,7 +156,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             center: const Alignment(0.85, 0.45),
                             radius: 1.0,
                             colors: [
-                              const Color(0xFF0EA5E9).withValues(alpha: 0.12),
+                              const Color(0xFF84AFFF).withValues(alpha: 0.2),
                               Colors.transparent,
                             ],
                           ),
@@ -192,11 +192,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           colors: [
                             Color.lerp(
                                   Colors.white,
-                                  const Color(0xFFE8F4FC),
+                                  const Color(0xFFEAF6FF),
                                   eased,
                                 )!
                                 .withValues(
-                                  alpha: 0.05 + 0.38 * eased * eased,
+                                  alpha: 0.06 + 0.42 * eased * eased,
                                 ),
                             Colors.transparent,
                           ],
@@ -316,7 +316,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
                                         color: Colors.white.withValues(
-                                          alpha: 0.42,
+                                          alpha: 0.34,
                                         ),
                                         width: 1.5,
                                       ),
@@ -324,8 +324,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                         colors: [
-                                          Colors.white.withValues(alpha: 0.22),
-                                          Colors.white.withValues(alpha: 0.12),
+                                          const Color(0xFFDFF2FF).withValues(
+                                            alpha: 0.24,
+                                          ),
+                                          const Color(0xFFCFE6FF).withValues(
+                                            alpha: 0.14,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -436,7 +440,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF6FB1FC), Color(0xFFEAF3FF)],
+          colors: [
+            Color(0xFF1E3A8A),
+            Color(0xFF2563EB),
+            Color(0xFF38BDF8),
+            Color(0xFF93C5FD),
+          ],
+          stops: [0.0, 0.34, 0.68, 1.0],
         ),
       ),
     );
@@ -456,8 +466,8 @@ class _LogoWithGlow extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B82F6).withValues(alpha: 0.35),
-            blurRadius: 48,
+            color: const Color(0xFF5FCFFF).withValues(alpha: 0.38),
+            blurRadius: 52,
             spreadRadius: 2,
             offset: const Offset(0, 16),
           ),

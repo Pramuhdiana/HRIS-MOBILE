@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/layout/dashboard_tab_bottom_inset.dart';
+import '../../../core/utils/snackbar_helper.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../../data/models/leave_model.dart';
 import '../../widgets/leave_balance_card.dart';
@@ -74,10 +75,9 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
         actions: [
           IconButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Apply leave feature coming soon'),
-                ),
+              SnackBarHelper.showComingSoon(
+                context,
+                feature: 'Apply leave feature',
               );
             },
             icon: const Icon(Icons.add),
@@ -104,8 +104,9 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Apply leave feature coming soon')),
+          SnackBarHelper.showComingSoon(
+            context,
+            feature: 'Apply leave feature',
           );
         },
         icon: const Icon(Icons.add),
@@ -362,10 +363,9 @@ class _LeaveTabState extends State<LeaveTab> with TickerProviderStateMixin {
                   child: LeaveListItem(
                     leave: leaveRecords[index],
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Leave details coming soon'),
-                        ),
+                      SnackBarHelper.showComingSoon(
+                        context,
+                        feature: 'Leave details',
                       );
                     },
                   ),

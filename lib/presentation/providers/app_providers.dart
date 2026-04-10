@@ -49,6 +49,9 @@ class CompanyContextNotifier extends StateNotifier<CompanyContext?> {
 /// Auth Token Provider
 final authTokenProvider = StateProvider<String?>((ref) => null);
 
+/// `true` setelah HTTP 401 pada request terautentikasi; router arahkan ke session-expired screen.
+final sessionExpiredNoticeProvider = StateProvider<bool>((ref) => false);
+
 /// Update auth token and sync with API client
 void updateAuthToken(WidgetRef ref, String? token) {
   ref.read(authTokenProvider.notifier).state = token;

@@ -3,6 +3,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/utils/snackbar_helper.dart';
 import '../../data/models/attendance_model.dart';
 import 'glass/glass_card.dart';
 import 'glass/dashboard_glass_style.dart';
@@ -66,6 +67,7 @@ class AttendanceCard extends StatelessWidget {
       shadowOpacity: DashboardGlassStyle.shadowOpacity,
       enableShimmer: true,
       enableWaterRipple: false,
+      enableBackdropBlur: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,14 +212,12 @@ class AttendanceCard extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            attendance.hasClockOut
-                                ? 'Attendance complete for today'
-                                : 'Clock out functionality coming soon',
-                          ),
-                        ),
+                      SnackBarHelper.showInfo(
+                        context,
+                        title: 'Info',
+                        message: attendance.hasClockOut
+                            ? 'Attendance complete for today'
+                            : 'Clock out functionality coming soon',
                       );
                     },
                     borderRadius: BorderRadius.circular(AppDimensions.radiusM),

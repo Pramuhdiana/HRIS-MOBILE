@@ -78,6 +78,7 @@ class GlassCardExample extends StatelessWidget {
                     onTap: () {},
                     enableWaterRipple: true,
                     enableShimmer: true,
+                    enableBackdropBlur: false,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -160,6 +161,7 @@ class GlassCardExample extends StatelessWidget {
                     pressTilt: 0.15,
                     pressScale: 0.95,
                     pressSlidePixels: 10,
+                    enableBackdropBlur: false,
                     waterRippleColor: Colors.cyan.withValues(alpha: 0.6),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,6 +243,7 @@ class GlassCardExample extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     onTap: () {},
                     waterRippleColor: Colors.pink.withValues(alpha: 0.7),
+                    enableBackdropBlur: false,
                     waterRippleDuration: const Duration(milliseconds: 1500),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

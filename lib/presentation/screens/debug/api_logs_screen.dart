@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/snackbar_helper.dart';
 import '../../../core/network/api_log_store.dart';
 
 class ApiLogsScreen extends StatelessWidget {
@@ -97,7 +98,8 @@ class ApiLogsScreen extends StatelessWidget {
                               const SizedBox(height: 6),
                               Text(
                                 queryDisplay,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
                                       fontFamily: 'monospace',
                                       fontSize: 11,
                                       height: 1.25,
@@ -124,8 +126,7 @@ class ApiLogsScreen extends StatelessWidget {
   void _openDetail(BuildContext context, ApiLogEntry e) {
     final timeStr = DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(e.timestamp);
     final rawBody = e.responseBody?.trim() ?? '';
-    final displayBody =
-        rawBody.isEmpty ? '(no response body)' : rawBody;
+    final displayBody = rawBody.isEmpty ? '(no response body)' : rawBody;
 
     showModalBottomSheet<void>(
       context: context,
@@ -208,22 +209,21 @@ class ApiLogsScreen extends StatelessWidget {
                           child: Text(
                             'Response body',
                             style: Theme.of(ctx).textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                         const Spacer(),
                         IconButton(
                           tooltip: 'Copy response body',
                           onPressed: () async {
-                            await Clipboard.setData(ClipboardData(text: rawBody));
+                            await Clipboard.setData(
+                              ClipboardData(text: rawBody),
+                            );
                             if (ctx.mounted) {
-                              ScaffoldMessenger.of(ctx).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Response body copied'),
-                                  behavior: SnackBarBehavior.floating,
-                                  duration: Duration(seconds: 2),
-                                ),
+                              SnackBarHelper.showCopied(
+                                ctx,
+                                message: 'Response body copied',
                               );
                             }
                           },
@@ -238,7 +238,12 @@ class ApiLogsScreen extends StatelessWidget {
                       thumbVisibility: true,
                       child: SingleChildScrollView(
                         controller: scrollController,
-                        padding: EdgeInsets.fromLTRB(20, 0, 20, 16 + pad.bottom),
+                        padding: EdgeInsets.fromLTRB(
+                          20,
+                          0,
+                          20,
+                          16 + pad.bottom,
+                        ),
                         child: SelectableText(
                           displayBody,
                           style: const TextStyle(

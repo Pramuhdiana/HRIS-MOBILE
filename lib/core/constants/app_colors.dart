@@ -3,14 +3,50 @@ import 'package:flutter/material.dart';
 /// App Colors based on POS Mobile Figma Template
 /// Adapted for HRIS Mobile Application
 class AppColors {
-  // Primary Colors (Updated to match Figma POS Mobile template)
-  static const Color primary = Color(0xFF2196F3); // More vibrant blue like POS
-  static const Color primaryLight = Color(0xFF64B5F6);
-  static const Color primaryDark = Color(0xFF1976D2);
+  // === BLUE FROST THEME (RECOMMENDED) ===
+
+  // Background Gradient
+  static const liquidGlassBackdrop = Color(0xFF4A90E2);
+  static const gradientStart = Color(0xFF4A90E2); // Professional blue
+  static const gradientEnd = Color(0xFFE8F4F8); // Ice blue
+
+  // Glass Overlay
+  static final glassOverlayTop = Colors.white.withValues(alpha: 0.6);
+  static final glassOverlayBottom = Colors.white.withValues(alpha: 0.15);
+
+  // Primary Colors
+  static const primary = Color(0xFF2C5AA0); // Deep blue
+  // static const primary = Color(0xFF2D9B94); // TEAL
+
+  static const primaryLight = Color(0xFF64B5F6); // Light blue
+  static const primaryDark = Color(0xFF1A3A6B); // Darker blue
 
   // Secondary Colors
-  static const Color secondary = Color(0xFF3EBAE0);
-  static const Color secondaryLight = Color(0xFF66C8E5);
+  static const secondary = Color(0xFF64B5F6); // Accent blue
+  // static const secondary = Color(0xFF80CBC4); // Mint
+  static const secondaryLight = Color(0xFF90CAF9);
+
+  // Surface & Background
+  static const surface = Color(0xFFF5FBFF); // Almost white
+  static const surfaceVariant = Color(0xFFE1F5FE);
+  static const background = Color(0xFFFFFFFF);
+
+  // Text Colors
+  static const textPrimary = Color(0xFF1A3A6B); // Dark blue
+  static const textSecondary = Color(0xFF546E7A); // Gray blue
+  static const textTertiary = Color(0xFF90A4AE); // Light gray
+
+  // Status Colors
+  static const success = Color(0xFF4CAF50);
+  static const warning = Color(0xFFFFA726);
+  static const error = Color(0xFFEF5350);
+  static const info = Color(0xFF29B6F6);
+
+  // Glass Effect Colors
+  static final glassBorder = Colors.white.withValues(alpha: 0.3);
+  static final glassShadow = Colors.black.withValues(alpha: 0.1);
+
+  // Secondary Colors
   static const Color secondaryDark = Color(0xFF2A8DB3);
 
   // Accent Colors
@@ -19,25 +55,15 @@ class AppColors {
   static const Color accentDark = Color(0xFFCC8520);
 
   // Background Colors
-  static const Color background = Color(0xFFF8F9FA);
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFFF1F3F4);
 
   /// Selaras dengan ujung gradien [LiquidGlassScaffold]; dipakai agar overscroll
   /// / pull-to-refresh tidak memunculkan putih Material yang kontras dengan gradien.
-  static const Color liquidGlassBackdrop = Color(0xFFEAF3FF);
 
   // Text Colors
-  static const Color textPrimary = Color(0xFF212529);
-  static const Color textSecondary = Color(0xFF6C757D);
   static const Color textLight = Color(0xFFADB5BD);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
-
-  // Status Colors
-  static const Color success = Color(0xFF28A745);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color error = Color(0xFFDC3545);
-  static const Color info = Color(0xFF17A2B8);
 
   // Border Colors
   static const Color border = Color(0xFFE9ECEF);

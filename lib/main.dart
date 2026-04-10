@@ -7,6 +7,7 @@ import 'core/themes/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/routes/app_router.dart';
 import 'presentation/providers/app_providers.dart';
+import 'presentation/providers/auth_provider.dart';
 import 'presentation/widgets/app_refresh_configuration.dart';
 import 'presentation/widgets/global_api_debug_overlay.dart';
 
@@ -26,11 +27,27 @@ void main() async {
   );
 }
 
-class HRISMobileApp extends ConsumerWidget {
+class HRISMobileApp extends ConsumerStatefulWidget {
   const HRISMobileApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HRISMobileApp> createState() => _HRISMobileAppState();
+}
+
+class _HRISMobileAppState extends ConsumerState<HRISMobileApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(apiClientProvider).setOnUnauthorized(() {
+        ref.read(authProvider.notifier).clearSessionDueToUnauthorized();
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final locale = ref.watch(languageProvider);
     final router = ref.watch(goRouterProvider);
 

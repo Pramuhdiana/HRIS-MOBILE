@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../data/models/employee_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/errors/failures.dart';
 import '../../../core/routes/app_router.dart';
 import '../../../core/layout/dashboard_tab_bottom_inset.dart';
+import '../../../core/utils/snackbar_helper.dart';
 import '../../../data/providers/mock_data_provider.dart';
 import '../../widgets/language_switcher.dart';
 import '../../providers/app_providers.dart';
@@ -57,6 +60,7 @@ class ProfileTab extends ConsumerStatefulWidget {
 class _ProfileTabState extends ConsumerState<ProfileTab> {
   late final RefreshController _refreshController;
   late final ScrollController _scrollController;
+  bool _uploadingPhoto = false;
 
   @override
   void initState() {
@@ -80,6 +84,77 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
     } catch (_) {
       if (mounted) _refreshController.refreshFailed();
     }
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    if (_uploadingPhoto) return;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: 82,
+        maxWidth: 1600,
+      );
+      if (picked == null || !mounted) return;
+      setState(() => _uploadingPhoto = true);
+      final ds = ref.read(profileDataSourceProvider);
+      await ds.uploadProfilePhoto(photoFilePath: picked.path);
+      ref.invalidate(profileApiProvider);
+      if (!mounted) return;
+      SnackBarHelper.showDataSavedSuccess(context);
+    } on Failure catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      SnackBarHelper.showError(context, title: l10n.error, message: e.message);
+    } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      SnackBarHelper.showError(
+        context,
+        title: l10n.error,
+        message: e.toString(),
+      );
+    } finally {
+      if (mounted) setState(() => _uploadingPhoto = false);
+    }
+  }
+
+  Future<void> _showPhotoSourceSheet() async {
+    if (_uploadingPhoto) return;
+    final l10n = AppLocalizations.of(context)!;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Buka galeri'),
+                onTap: () {
+                  Navigator.of(sheetCtx).pop();
+                  _pickAndUploadPhoto(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Buka kamera'),
+                onTap: () {
+                  Navigator.of(sheetCtx).pop();
+                  _pickAndUploadPhoto(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: Text(l10n.cancel),
+                onTap: () => Navigator.of(sheetCtx).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -150,54 +225,118 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               AppDimensions.paddingL,
                             ),
                             enableShimmer: false,
+                            enableBackdropBlur: false,
                             child: Column(
                               children: [
                                 // Profile Picture and Name
-                                Container(
-                                  width: AppDimensions.avatarXL,
-                                  height: AppDimensions.avatarXL,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(
-                                      alpha: 0.12,
-                                    ),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.primary,
-                                      width: 3,
-                                    ),
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child:
-                                      (profile?.photoUrl ?? snap.photoUrl) !=
-                                              null &&
-                                          (profile?.photoUrl ?? snap.photoUrl)!
-                                              .isNotEmpty
-                                      ? Image.network(
-                                          (profile?.photoUrl ?? snap.photoUrl)!,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Center(
-                                            child: Text(
-                                              snap.hasSession
-                                                  ? snap.initials
-                                                  : employee.initials,
-                                              style: AppTypography.h3.copyWith(
-                                                color: AppColors.primary,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
+                                Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _uploadingPhoto
+                                          ? null
+                                          : _showPhotoSourceSheet,
+                                      child: Container(
+                                        width: AppDimensions.avatarXL,
+                                        height: AppDimensions.avatarXL,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.12,
                                           ),
-                                        )
-                                      : Center(
-                                          child: Text(
-                                            snap.hasSession
-                                                ? snap.initials
-                                                : employee.initials,
-                                            style: AppTypography.h3.copyWith(
-                                              color: AppColors.primary,
-                                              fontWeight: FontWeight.bold,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppColors.primary,
+                                            width: 3,
+                                          ),
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: Stack(
+                                          fit: StackFit.expand,
+                                          children: [
+                                            if ((profile?.photoUrl ??
+                                                        snap.photoUrl) !=
+                                                    null &&
+                                                (profile?.photoUrl ??
+                                                        snap.photoUrl)!
+                                                    .isNotEmpty)
+                                              Image.network(
+                                                (profile?.photoUrl ??
+                                                    snap.photoUrl)!,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) =>
+                                                    Center(
+                                                      child: Text(
+                                                        snap.hasSession
+                                                            ? snap.initials
+                                                            : employee.initials,
+                                                        style: AppTypography.h3
+                                                            .copyWith(
+                                                              color: AppColors
+                                                                  .primary,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                      ),
+                                                    ),
+                                              )
+                                            else
+                                              Center(
+                                                child: Text(
+                                                  snap.hasSession
+                                                      ? snap.initials
+                                                      : employee.initials,
+                                                  style: AppTypography.h3
+                                                      .copyWith(
+                                                        color:
+                                                            AppColors.primary,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                              ),
+                                            if (_uploadingPhoto)
+                                              const ColoredBox(
+                                                color: Color(0x66000000),
+                                                child: Center(
+                                                  child: SizedBox(
+                                                    width: 22,
+                                                    height: 22,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2.2,
+                                                          color: Colors.white,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: -2,
+                                      bottom: -2,
+                                      child: Material(
+                                        color: AppColors.primary,
+                                        shape: const CircleBorder(),
+                                        child: InkWell(
+                                          customBorder: const CircleBorder(),
+                                          onTap: _uploadingPhoto
+                                              ? null
+                                              : _showPhotoSourceSheet,
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(7),
+                                            child: Icon(
+                                              Icons.photo_camera_outlined,
+                                              size: 16,
+                                              color: Colors.white,
                                             ),
                                           ),
                                         ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
 
                                 const SizedBox(height: AppDimensions.paddingM),
@@ -467,7 +606,15 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.editProfile,
                               l10n.profileEditProfileSubtitle,
                               context,
-                              onTap: () => context.push(AppRoutes.editProfile),
+                              onTap: () async {
+                                final result = await context.push(
+                                  AppRoutes.editProfile,
+                                );
+                                if (!context.mounted) return;
+                                if (result == true) {
+                                  SnackBarHelper.showDataSavedSuccess(context);
+                                }
+                              },
                             ),
 
                             _buildMenuTile(
@@ -476,12 +623,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.profileChangePasswordSubtitle,
                               context,
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.profileSnackPasswordComingSoon,
-                                    ),
-                                  ),
+                                SnackBarHelper.showInfo(
+                                  context,
+                                  title: l10n.info,
+                                  message: l10n.profileSnackPasswordComingSoon,
                                 );
                               },
                             ),
@@ -492,12 +637,11 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.profileNotificationsSubtitle,
                               context,
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
+                                SnackBarHelper.showInfo(
+                                  context,
+                                  title: l10n.info,
+                                  message:
                                       l10n.profileSnackNotificationsComingSoon,
-                                    ),
-                                  ),
                                 );
                               },
                             ),
@@ -520,12 +664,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.profileSettingsSubtitle,
                               context,
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.profileSnackSettingsComingSoon,
-                                    ),
-                                  ),
+                                SnackBarHelper.showInfo(
+                                  context,
+                                  title: l10n.info,
+                                  message: l10n.profileSnackSettingsComingSoon,
                                 );
                               },
                             ),
@@ -536,12 +678,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.profileHelpSupportSubtitle,
                               context,
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.profileSnackHelpComingSoon,
-                                    ),
-                                  ),
+                                SnackBarHelper.showInfo(
+                                  context,
+                                  title: l10n.info,
+                                  message: l10n.profileSnackHelpComingSoon,
                                 );
                               },
                             ),
@@ -922,11 +1062,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
     } catch (e) {
       if (context.mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.profileErrorDetails(e.toString())),
-            backgroundColor: AppColors.error,
-          ),
+        SnackBarHelper.showError(
+          context,
+          title: l10n.error,
+          message: l10n.profileErrorDetails(e.toString()),
         );
       }
     }

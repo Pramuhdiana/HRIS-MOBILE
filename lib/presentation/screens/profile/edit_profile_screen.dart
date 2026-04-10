@@ -8,15 +8,14 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/errors/failures.dart';
-import '../../../core/routes/app_router.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/profile_api_provider.dart';
 import '../../widgets/liquid_glass_card.dart';
 import '../../widgets/liquid_glass_scaffold.dart';
 
-const _genderApiMale = 'Laki-laki';
-const _genderApiFemale = 'Perempuan';
+const _genderApiMale = 'Pria';
+const _genderApiFemale = 'Wanita';
 const _maritalSingle = 'Lajang';
 const _maritalMarried = 'Menikah';
 
@@ -315,15 +314,7 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
       );
       ref.invalidate(profileApiProvider);
       if (!mounted) return;
-      context.pop();
-      final rootCtx = AppRouter.navigatorKey.currentContext;
-      if (rootCtx != null && rootCtx.mounted) {
-        SnackBarHelper.showSuccess(
-          rootCtx,
-          title: l10n.success,
-          message: l10n.profileUpdateSuccess,
-        );
-      }
+      context.pop(true);
     } on Failure catch (e) {
       if (!mounted) return;
       SnackBarHelper.showError(context, title: l10n.error, message: e.message);

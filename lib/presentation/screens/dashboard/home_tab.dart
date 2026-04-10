@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/routes/app_router.dart';
 import '../../../core/layout/dashboard_tab_bottom_inset.dart';
 import '../../../core/utils/snackbar_helper.dart';
 import '../../../data/providers/mock_data_provider.dart';
@@ -17,6 +19,10 @@ import '../../widgets/app_smart_refresher.dart';
 import '../../widgets/glass/glass_card.dart';
 import '../../widgets/glass/dashboard_glass_style.dart';
 import '../../widgets/liquid_glass_scaffold.dart';
+
+const _glassOnPrimary = Color(0xFF0F2741);
+const _glassOnSecondary = Color(0xFF2E4C6B);
+const _glassIconColor = Color(0xFF123459);
 
 /// Home Tab - Main dashboard with overview information
 /// Based on POS Mobile Figma Template design
@@ -135,6 +141,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         borderRadius: AppDimensions.cardRadius,
                         padding: const EdgeInsets.all(AppDimensions.paddingL),
                         blurSigma: DashboardGlassStyle.blurSigma,
+                        enableBackdropBlur: false,
+                        disabledBackdropBlurSigma: 2.5,
                         borderWidth: DashboardGlassStyle.borderWidth,
                         borderOpacity: DashboardGlassStyle.borderOpacity,
                         overlayTopOpacity:
@@ -156,7 +164,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                     Text(
                                       '${AppStrings.welcome},',
                                       style: AppTypography.bodyMedium.copyWith(
-                                        color: AppColors.textSecondary,
+                                        color: _glassOnSecondary,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -164,7 +172,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                       greetingName,
                                       style: AppTypography.h4.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: AppColors.textPrimary,
+                                        color: _glassOnPrimary,
                                       ),
                                     ),
                                   ],
@@ -178,7 +186,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                           Icon(
                                             Icons.notifications_outlined,
                                             size: AppDimensions.iconL,
-                                            color: AppColors.textPrimary,
+                                            color: _glassIconColor,
                                           ),
                                           Positioned(
                                             right: 0,
@@ -236,8 +244,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                                       style: AppTypography
                                                           .labelLarge
                                                           .copyWith(
-                                                            color: AppColors
-                                                                .textPrimary,
+                                                            color: _glassOnPrimary,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
@@ -249,8 +256,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                                                 avatarInitials,
                                                 style: AppTypography.labelLarge
                                                     .copyWith(
-                                                      color:
-                                                          AppColors.textPrimary,
+                                                      color: _glassOnPrimary,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -265,7 +271,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             Text(
                               greetingTitle,
                               style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
+                                color: _glassOnSecondary,
                               ),
                             ),
                           ],
@@ -289,7 +295,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             'Quick Actions',
                             style: AppTypography.h6.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: _glassOnPrimary,
                             ),
                           ),
                           const SizedBox(height: AppDimensions.paddingM),
@@ -299,6 +305,8 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                               AppDimensions.paddingL,
                             ),
                             blurSigma: DashboardGlassStyle.blurSigma,
+                            enableBackdropBlur: false,
+                            disabledBackdropBlurSigma: 2.5,
                             borderWidth: DashboardGlassStyle.borderWidth,
                             borderOpacity: DashboardGlassStyle.borderOpacity,
                             overlayTopOpacity:
@@ -341,7 +349,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                             'This Month Overview',
                             style: AppTypography.h6.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: _glassOnPrimary,
                             ),
                           ),
                           const SizedBox(height: AppDimensions.paddingM),
@@ -395,19 +403,19 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                       ),
                     ),
 
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: AppDimensions.paddingL,
-                    //   ),
-                    //   child: Align(
-                    //     alignment: Alignment.centerLeft,
-                    //     child: TextButton.icon(
-                    //       onPressed: () => context.push(AppRoutes.glassDemo),
-                    //       icon: const Icon(Icons.blur_on_outlined),
-                    //       label: const Text('Demo iOS glass (GlassCard)'),
-                    //     ),
-                    //   ),
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimensions.paddingL,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.glassDemo),
+                          icon: const Icon(Icons.blur_on_outlined),
+                          label: const Text('Demo iOS glass (GlassCard)'),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: AppDimensions.paddingXL),
                   ],
                 ),
@@ -462,7 +470,7 @@ class _DashboardIconScrollGrid extends StatelessWidget {
       fontSize: _labelFontSize,
       height: _labelHeightFactor,
       fontWeight: FontWeight.w600,
-      color: AppColors.textPrimary,
+      color: _glassOnPrimary,
     );
     final labelMaxWidth = _tileWidth - AppDimensions.paddingXS * 2;
     final tp = TextPainter(
@@ -580,6 +588,8 @@ class _DashboardIconScrollGrid extends StatelessWidget {
                 borderRadius: _glassCircleSize / 2,
                 padding: EdgeInsets.zero,
                 blurSigma: DashboardGlassStyle.quickActionIconBlurSigma,
+                enableBackdropBlur: false,
+                disabledBackdropBlurSigma: 2.4,
                 borderWidth: DashboardGlassStyle.quickActionIconBorderWidth,
                 borderOpacity: DashboardGlassStyle.quickActionIconBorderOpacity,
                 overlayTopOpacity:
@@ -606,7 +616,7 @@ class _DashboardIconScrollGrid extends StatelessWidget {
                     child: Icon(
                       item.icon,
                       size: _iconInnerSize + 2,
-                      color: AppColors.textPrimary,
+                      color: _glassIconColor,
                       shadows: const [
                         Shadow(
                           color: Color(0x22000000),
@@ -632,7 +642,7 @@ class _DashboardIconScrollGrid extends StatelessWidget {
                       fontSize: _labelFontSize,
                       height: _labelHeightFactor,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: _glassOnPrimary,
                     ),
                   ),
                 ),
