@@ -5,11 +5,13 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../providers/app_providers.dart';
+import 'liquid_glass_card.dart';
 
 /// Language Switcher Widget
 /// Allows users to switch between Indonesian and English
 class LanguageSwitcher extends ConsumerWidget {
   const LanguageSwitcher({super.key});
+  static const _iconNeutral = AppColors.textPrimary;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,19 +19,9 @@ class LanguageSwitcher extends ConsumerWidget {
     final currentLocale = ref.watch(languageProvider);
     final isIndonesian = currentLocale.languageCode == 'id';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.paddingS),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return LiquidGlassCard(
+      borderRadius: AppDimensions.radiusM,
+      padding: EdgeInsets.zero,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -48,7 +40,7 @@ class LanguageSwitcher extends ConsumerWidget {
                   child: Icon(
                     Icons.language,
                     size: AppDimensions.iconS,
-                    color: AppColors.primary,
+                    color: _iconNeutral,
                   ),
                 ),
                 const SizedBox(width: AppDimensions.paddingM),
@@ -59,6 +51,7 @@ class LanguageSwitcher extends ConsumerWidget {
                       Text(
                         l10n.language,
                         style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -75,7 +68,7 @@ class LanguageSwitcher extends ConsumerWidget {
                 Icon(
                   Icons.arrow_forward_ios,
                   size: AppDimensions.iconXS,
-                  color: AppColors.textLight,
+                  color: AppColors.textSecondary.withValues(alpha: 0.8),
                 ),
               ],
             ),

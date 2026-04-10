@@ -24,6 +24,12 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/liquid_glass_card.dart';
 import '../../widgets/liquid_glass_scaffold.dart';
 
+const _glassOnPrimary = AppColors.textPrimary;
+const _glassOnSecondary = AppColors.textSecondary;
+const _glassIconColor = AppColors.textPrimary;
+const _glassAccent = AppColors.primary;
+const _glassAccentSoft = AppColors.secondary;
+
 /// Profile Tab - Shows user profile and settings
 /// Based on POS Mobile Figma Template design
 class ProfileTab extends ConsumerStatefulWidget {
@@ -240,12 +246,12 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                         width: AppDimensions.avatarXL,
                                         height: AppDimensions.avatarXL,
                                         decoration: BoxDecoration(
-                                          color: AppColors.primary.withValues(
+                                          color: _glassAccent.withValues(
                                             alpha: 0.12,
                                           ),
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: AppColors.primary,
+                                            color: _glassAccent,
                                             width: 3,
                                           ),
                                         ),
@@ -271,8 +277,8 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                                             : employee.initials,
                                                         style: AppTypography.h3
                                                             .copyWith(
-                                                              color: AppColors
-                                                                  .primary,
+                                                              color:
+                                                                  _glassAccent,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
@@ -288,8 +294,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                                       : employee.initials,
                                                   style: AppTypography.h3
                                                       .copyWith(
-                                                        color:
-                                                            AppColors.primary,
+                                                        color: _glassAccent,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -318,7 +323,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                       right: -2,
                                       bottom: -2,
                                       child: Material(
-                                        color: AppColors.primary,
+                                        color: _glassAccent,
                                         shape: const CircleBorder(),
                                         child: InkWell(
                                           customBorder: const CircleBorder(),
@@ -344,7 +349,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                 Text(
                                   displayName,
                                   style: AppTypography.h5.copyWith(
-                                    color: AppColors.textPrimary,
+                                    color: _glassOnPrimary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.center,
@@ -359,12 +364,16 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                     label: Text(
                                       roleBadge,
                                       style: AppTypography.labelSmall.copyWith(
-                                        color: AppColors.primary,
+                                        color: _glassOnPrimary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    backgroundColor: Colors.white.withValues(
-                                      alpha: 0.85,
+                                    backgroundColor: _glassAccentSoft
+                                        .withValues(alpha: 0.22),
+                                    side: BorderSide(
+                                      color: _glassAccent.withValues(
+                                        alpha: 0.35,
+                                      ),
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 4,
@@ -381,7 +390,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                   Text(
                                     posDeptLine,
                                     style: AppTypography.bodyMedium.copyWith(
-                                      color: AppColors.textPrimary,
+                                      color: _glassOnPrimary,
                                       fontWeight: FontWeight.w500,
                                     ),
                                     textAlign: TextAlign.center,
@@ -392,7 +401,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                   Text(
                                     emailLine,
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
+                                      color: _glassOnSecondary,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -403,7 +412,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                   Text(
                                     loginHint,
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textSecondary.withValues(
+                                      color: _glassOnSecondary.withValues(
                                         alpha: 0.85,
                                       ),
                                     ),
@@ -429,7 +438,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                       width: 1,
                                       height: 40,
                                       color: AppColors.border.withValues(
-                                        alpha: 0.7,
+                                        alpha: 0.5,
                                       ),
                                     ),
                                     _buildStatItem(
@@ -441,7 +450,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                       width: 1,
                                       height: 40,
                                       color: AppColors.border.withValues(
-                                        alpha: 0.7,
+                                        alpha: 0.5,
                                       ),
                                     ),
                                     _buildStatItem(
@@ -507,7 +516,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                                     profile.teamMemberCount!,
                                   ),
                                   style: AppTypography.bodySmall.copyWith(
-                                    color: AppColors.textSecondary,
+                                    color: _glassOnSecondary,
                                   ),
                                 ),
                               ],
@@ -623,11 +632,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                               l10n.profileChangePasswordSubtitle,
                               context,
                               onTap: () {
-                                SnackBarHelper.showInfo(
-                                  context,
-                                  title: l10n.info,
-                                  message: l10n.profileSnackPasswordComingSoon,
-                                );
+                                context.push(AppRoutes.changePassword);
                               },
                             ),
 
@@ -648,6 +653,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
 
                             // Language Switcher
                             const LanguageSwitcher(),
+                            const SizedBox(height: AppDimensions.paddingS),
 
                             // Test Onboarding Button (for development/testing)
                             _buildMenuTile(
@@ -751,7 +757,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                 Icon(
                   Icons.schedule_rounded,
                   size: AppDimensions.iconS,
-                  color: AppColors.primary,
+                  color: _glassIconColor,
                 ),
                 const SizedBox(width: AppDimensions.paddingS),
                 Expanded(
@@ -761,7 +767,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                       Text(
                         l10n.profileWorkSchedule,
                         style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
+                          color: _glassOnSecondary,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -787,7 +793,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                 Icon(
                   Icons.place_outlined,
                   size: AppDimensions.iconS,
-                  color: AppColors.primary,
+                  color: _glassIconColor,
                 ),
                 const SizedBox(width: AppDimensions.paddingS),
                 Expanded(
@@ -795,7 +801,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     address,
                     style: AppTypography.bodySmall.copyWith(
                       height: 1.35,
-                      color: AppColors.textPrimary,
+                      color: _glassOnPrimary,
                     ),
                   ),
                 ),
@@ -826,7 +832,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.primary.withOpacity(0.12),
+            backgroundColor: _glassAccentSoft.withValues(alpha: 0.2),
             child: photo != null && photo.isNotEmpty
                 ? ClipOval(
                     child: Image.network(
@@ -837,7 +843,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                       errorBuilder: (_, __, ___) => Text(
                         initials,
                         style: AppTypography.labelLarge.copyWith(
-                          color: AppColors.primary,
+                          color: _glassIconColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -846,7 +852,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                 : Text(
                     initials,
                     style: AppTypography.labelLarge.copyWith(
-                      color: AppColors.primary,
+                      color: _glassIconColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -867,7 +873,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   Text(
                     role,
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: _glassOnSecondary,
                     ),
                   ),
                 ],
@@ -900,16 +906,14 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
         Text(
           value,
           style: AppTypography.labelLarge.copyWith(
-            color: AppColors.textPrimary,
+            color: _glassOnPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: AppTypography.bodySmall.copyWith(color: _glassOnSecondary),
           textAlign: TextAlign.center,
         ),
       ],
@@ -932,14 +936,10 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingS),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: _glassAccentSoft.withValues(alpha: 0.16),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusS),
               ),
-              child: Icon(
-                icon,
-                size: AppDimensions.iconS,
-                color: AppColors.primary,
-              ),
+              child: Icon(icon, size: AppDimensions.iconS, color: _glassIconColor),
             ),
             const SizedBox(width: AppDimensions.paddingM),
             Expanded(
@@ -949,7 +949,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   Text(
                     label,
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: _glassOnSecondary,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -992,7 +992,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   Container(
                     padding: const EdgeInsets.all(AppDimensions.paddingS),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: _glassAccentSoft.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(
                         AppDimensions.radiusS,
                       ),
@@ -1000,7 +1000,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     child: Icon(
                       icon,
                       size: AppDimensions.iconS,
-                      color: AppColors.primary,
+                      color: _glassIconColor,
                     ),
                   ),
                   const SizedBox(width: AppDimensions.paddingM),
@@ -1011,6 +1011,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                         Text(
                           title,
                           style: AppTypography.bodyMedium.copyWith(
+                            color: _glassOnPrimary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -1018,7 +1019,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                         Text(
                           subtitle,
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                            color: _glassOnSecondary,
                           ),
                         ),
                       ],
@@ -1027,7 +1028,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                   Icon(
                     Icons.arrow_forward_ios,
                     size: AppDimensions.iconXS,
-                    color: AppColors.textLight,
+                    color: _glassOnSecondary.withValues(alpha: 0.8),
                   ),
                 ],
               ),

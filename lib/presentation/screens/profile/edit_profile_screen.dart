@@ -13,6 +13,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../providers/profile_api_provider.dart';
 import '../../widgets/liquid_glass_card.dart';
 import '../../widgets/liquid_glass_scaffold.dart';
+import '../../widgets/profile/profile_glass_header.dart';
 
 const _genderApiMale = 'Pria';
 const _genderApiFemale = 'Wanita';
@@ -96,54 +97,61 @@ class EditProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(profileApiProvider);
 
     return LiquidGlassScaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          l10n.editProfile,
-          style: AppTypography.h6.copyWith(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: profileAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-        error: (err, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingL),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.cloud_off_outlined,
-                  size: 48,
-                  color: AppColors.textSecondary.withValues(alpha: 0.8),
-                ),
-                const SizedBox(height: AppDimensions.paddingM),
-                Text(
-                  l10n.serverError,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodyMedium.copyWith(
-                    color: AppColors.textPrimary,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppDimensions.paddingL,
+            AppDimensions.paddingL,
+            AppDimensions.paddingL,
+            0,
+          ),
+          child: Column(
+            children: [
+              ProfileGlassHeader(
+                title: l10n.editProfile,
+                onBack: () => context.pop(),
+              ),
+              const SizedBox(height: AppDimensions.paddingM),
+              Expanded(
+                child: profileAsync.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
                   ),
+                  error: (err, _) => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppDimensions.paddingL),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.cloud_off_outlined,
+                            size: 48,
+                            color: AppColors.textSecondary.withValues(alpha: 0.8),
+                          ),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          Text(
+                            l10n.serverError,
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: AppDimensions.paddingM),
+                          FilledButton.icon(
+                            onPressed: () => ref.invalidate(profileApiProvider),
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: Text(l10n.refresh),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  data: (profile) => _EditProfileForm(initial: profile),
                 ),
-                const SizedBox(height: AppDimensions.paddingM),
-                FilledButton.icon(
-                  onPressed: () => ref.invalidate(profileApiProvider),
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: Text(l10n.refresh),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        data: (profile) => _EditProfileForm(initial: profile),
       ),
     );
   }
@@ -397,25 +405,24 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              AppDimensions.paddingL,
-              AppDimensions.paddingS,
-              AppDimensions.paddingL,
-              AppDimensions.paddingXL,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            0,
+            AppDimensions.paddingS,
+            0,
+            AppDimensions.paddingXL,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - 24,
             ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - 24,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                     Text(
                       l10n.profileEditFormSubtitle,
                       style: AppTypography.bodyMedium.copyWith(
@@ -731,13 +738,12 @@ class _EditProfileFormState extends ConsumerState<_EditProfileForm> {
                               ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

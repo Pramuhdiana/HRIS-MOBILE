@@ -57,4 +57,20 @@ class AuthDataSource {
   Future<Map<String, dynamic>> logout() async {
     return await _apiHelper.post(ApiEndpoints.logout, data: <String, dynamic>{});
   }
+
+  /// Change current user password.
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newConfirmPassword,
+  }) async {
+    return await _apiHelper.post(
+      ApiEndpoints.changePassword,
+      data: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_confirm_password': newConfirmPassword,
+      },
+    );
+  }
 }

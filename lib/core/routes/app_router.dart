@@ -8,6 +8,7 @@ import '../../presentation/screens/auth/session_expired_screen.dart';
 import '../../presentation/screens/dashboard/main_dashboard_screen.dart';
 import '../../presentation/screens/debug/api_logs_screen.dart';
 import '../../presentation/screens/profile/edit_profile_screen.dart';
+import '../../presentation/screens/profile/change_password_screen.dart';
 import '../../presentation/widgets/glass_card.dart';
 import '../../presentation/providers/app_providers.dart';
 import 'page_transitions.dart';
@@ -48,6 +49,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             state.matchedLocation == AppRoutes.sessionExpired;
         final isDashboard = state.matchedLocation == AppRoutes.dashboard;
         final isEditProfile = state.matchedLocation == AppRoutes.editProfile;
+        final isChangePassword =
+            state.matchedLocation == AppRoutes.changePassword;
         final isApiLogs = state.matchedLocation == AppRoutes.apiLogs;
         final isGlassDemo = state.matchedLocation == AppRoutes.glassDemo;
 
@@ -72,7 +75,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         }
 
         if (!isLoggedIn &&
-            (isDashboard || isEditProfile || isApiLogs) &&
+            (isDashboard || isEditProfile || isChangePassword || isApiLogs) &&
             !isSessionExpiredPage) {
           return AppRoutes.login;
         }
@@ -150,6 +153,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.changePassword,
+        name: AppRoutes.changePasswordName,
+        pageBuilder: (context, state) => PageTransitions.portalFadeIn(
+          state: state,
+          child: const ChangePasswordScreen(),
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.apiLogs,
         name: AppRoutes.apiLogsName,
         pageBuilder: (context, state) => PageTransitions.portalFadeIn(
@@ -193,6 +204,7 @@ class AppRoutes {
   static const String sessionExpired = '/session-expired';
   static const String dashboard = '/dashboard';
   static const String editProfile = '/edit-profile';
+  static const String changePassword = '/change-password';
   static const String apiLogs = '/api-logs';
   static const String glassDemo = '/glass-demo';
 
@@ -203,6 +215,7 @@ class AppRoutes {
   static const String sessionExpiredName = 'session-expired';
   static const String dashboardName = 'dashboard';
   static const String editProfileName = 'edit-profile';
+  static const String changePasswordName = 'change-password';
   static const String apiLogsName = 'api-logs';
   static const String glassDemoName = 'glass-demo';
 
